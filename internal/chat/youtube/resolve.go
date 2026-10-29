@@ -13,6 +13,7 @@ import (
 
 var reCanonical = regexp.MustCompile(`<link[^>]+rel=["']canonical["'][^>]*>`)
 var reHref = regexp.MustCompile(`href=["']([^"']+)["']`)
+var reVideoID = regexp.MustCompile(`^[a-zA-Z0-9_-]{11}$`)
 
 var ErrChannelOffline = errors.New("channel is not live")
 
@@ -29,6 +30,10 @@ func resolveInput(input string) (resolvedInput, error) {
 	input = strings.TrimSpace(input)
 	if input == "" {
 		return resolvedInput{}, fmt.Errorf("empty input")
+	}
+
+	if reVideoID.MatchString(input) {
+		return resolvedInput{videoURL: watchURL(input)}, nil
 	}
 
 	if strings.HasPrefix(input, "@") {
@@ -48,19 +53,63 @@ func resolveInput(input string) (resolvedInput, error) {
 		return resolvedInput{}, fmt.Errorf("invalid input: %w", err)
 	}
 
-	switch u.Host {
+	host := strings.ToLower(u.Host)
+	host = strings.TrimPrefix(host, "www.")
+
+	switch host {
 	case "youtu.be":
-		videoID := strings.TrimPrefix(u.Path, "/")
+		videoID := strings.Trim(strings.TrimPrefix(u.Path, "/"), "/")
+		if videoID == "" {
+			videoID = u.Query().Get("v")
+		}
+
 		if videoID == "" {
 			return resolvedInput{}, fmt.Errorf("no video ID in youtu.be URL")
 		}
 
 		return resolvedInput{videoURL: watchURL(videoID)}, nil
 
-	case "www.youtube.com", "youtube.com":
-		if u.Path == "/watch" {
+	case "youtube.com", "m.youtube.com", "music.youtube.com", "gaming.youtube.com":
+		if u.Path == "/watch" || strings.HasPrefix(u.Path, "/watch/") {
 			if v := u.Query().Get("v"); v != "" {
 				return resolvedInput{videoURL: watchURL(v)}, nil
+			}
+
+			return resolvedInput{}, fmt.Errorf("no video ID in watch URL")
+		}
+
+		if u.Path == "/live_chat" || u.Path == "/live_chat_replay" {
+			if v := u.Query().Get("v"); v != "" {
+				return resolvedInput{videoURL: watchURL(v)}, nil
+			}
+
+			return resolvedInput{}, fmt.Errorf("no video ID in live chat URL")
+		}
+
+		if strings.HasPrefix(u.Path, "/live/") {
+			id := strings.Trim(strings.TrimPrefix(u.Path, "/live/"), "/")
+			if id != "" && (reVideoID.MatchString(id) || !strings.Contains(id, "/")) {
+				return resolvedInput{videoURL: watchURL(id)}, nil
+			}
+		}
+
+		if u.Path == "/live" {
+			if v := u.Query().Get("v"); v != "" {
+				return resolvedInput{videoURL: watchURL(v)}, nil
+			}
+		}
+
+		if strings.HasPrefix(u.Path, "/shorts/") {
+			id := strings.Trim(strings.TrimPrefix(u.Path, "/shorts/"), "/")
+			if id != "" {
+				return resolvedInput{videoURL: watchURL(id)}, nil
+			}
+		}
+
+		if strings.HasPrefix(u.Path, "/embed/") {
+			id := strings.Trim(strings.TrimPrefix(u.Path, "/embed/"), "/")
+			if id != "" {
+				return resolvedInput{videoURL: watchURL(id)}, nil
 			}
 		}
 
@@ -158,14 +207,23 @@ func parseLivePage(html string) (string, error) {
 	return "", ErrChannelOffline
 }
 
-// extractVideoID returns the video ID from a youtube.com/watch?v=... URL, or "".
+// extractVideoID returns the video ID from a youtube.com/watch?v=... or /live/... URL, or "".
 func extractVideoID(rawURL string) string {
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return ""
 	}
+
 	if u.Path == "/watch" {
 		return u.Query().Get("v")
 	}
+
+	if strings.HasPrefix(u.Path, "/live/") {
+		id := strings.Trim(strings.TrimPrefix(u.Path, "/live/"), "/")
+		if reVideoID.MatchString(id) {
+			return id
+		}
+	}
+
 	return ""
 }

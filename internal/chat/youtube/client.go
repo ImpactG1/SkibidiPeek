@@ -44,6 +44,9 @@ var ErrAuthStale = errors.New("youtube auth/config stale")
 // get_live_chat rejects.
 var ErrNotLive = errors.New("youtube stream is not live")
 
+// ErrNoLiveChat means the video does not have live chat enabled or available.
+var ErrNoLiveChat = errors.New("live chat is not available for this video")
+
 const maxErrorBodySnippet = 200
 
 var httpClient = newHTTPClient()
@@ -74,6 +77,21 @@ func NewClient(onMessage MessageHandler, onEvent EventHandler) *Client {
 	}
 }
 
+func formatConnectError(err error) error {
+	switch {
+	case errors.Is(err, ErrRateLimited):
+		return errors.New("youtube rate-limited this ip; please wait a few minutes")
+	case errors.Is(err, ErrNotLive):
+		return errors.New("the stream has ended or is only a replay")
+	case errors.Is(err, ErrChannelOffline):
+		return errors.New("the channel is currently offline")
+	case errors.Is(err, ErrNoLiveChat):
+		return errors.New("live chat is not available for this video")
+	default:
+		return fmt.Errorf("failed to connect to youtube live chat: %w", err)
+	}
+}
+
 func (c *Client) Connect(input string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -85,7 +103,7 @@ func (c *Client) Connect(input string) error {
 
 	target, err := resolveInput(input)
 	if err != nil {
-		return fmt.Errorf("failed to resolve video URL: %w", err)
+		return fmt.Errorf("invalid youtube link or video id: %w", err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -94,7 +112,7 @@ func (c *Client) Connect(input string) error {
 		continuation, cfg, err := fetchInitialData(ctx, c.hc, target.videoURL)
 		if err != nil {
 			cancel()
-			return fmt.Errorf("failed to fetch initial data: %w", err)
+			return formatConnectError(err)
 		}
 
 		c.activate(cancel, "chat:connected")
@@ -117,7 +135,7 @@ func (c *Client) Connect(input string) error {
 
 	if err != nil {
 		cancel()
-		return fmt.Errorf("failed to resolve video URL: %w", err)
+		return formatConnectError(err)
 	}
 
 	continuation, cfg, err := fetchInitialData(ctx, c.hc, videoURL)
@@ -129,7 +147,7 @@ func (c *Client) Connect(input string) error {
 
 	if err != nil {
 		cancel()
-		return fmt.Errorf("failed to fetch initial data: %w", err)
+		return formatConnectError(err)
 	}
 
 	c.activate(cancel, "chat:connected")
@@ -370,6 +388,10 @@ func (c *Client) pollLoop(ctx context.Context, videoURL, continuation string, cf
 
 		for _, msg := range messages {
 			c.OnMessage(msg)
+
+			if msg.SuperChat != nil || msg.MembershipEvent {
+				c.OnEvent("chat:donation", msg)
+			}
 		}
 
 		for _, id := range deletions {
@@ -473,7 +495,7 @@ func parseWatchPage(html string) (continuation string, cfg YtCfg, err error) {
 			"liveChatRenderer", "continuations", 0, "invalidationContinuationData", "continuation",
 		)
 		if err != nil {
-			return "", YtCfg{}, fmt.Errorf("continuation token not found in page: %w", err)
+			return "", YtCfg{}, fmt.Errorf("%w: %v", ErrNoLiveChat, err)
 		}
 	}
 

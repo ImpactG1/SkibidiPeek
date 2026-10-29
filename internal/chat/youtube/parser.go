@@ -31,6 +31,8 @@ func parseActions(actions []Action) (messages []chat.ChatMessage, deletions []st
 			messages = append(messages, parseTextMessage(*item.LiveChatTextMessageRenderer))
 		case item.LiveChatPaidMessageRenderer != nil:
 			messages = append(messages, parsePaidMessage(*item.LiveChatPaidMessageRenderer))
+		case item.LiveChatPaidStickerRenderer != nil:
+			messages = append(messages, parsePaidSticker(*item.LiveChatPaidStickerRenderer))
 		case item.LiveChatMembershipItemRenderer != nil:
 			messages = append(messages, parseMembership(*item.LiveChatMembershipItemRenderer))
 		case item.LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer != nil:
@@ -69,6 +71,22 @@ func parsePaidMessage(r LiveChatPaidMessageRenderer) chat.ChatMessage {
 		Amount:      r.PurchaseAmountText.SimpleText,
 		HeaderColor: argbToHex(r.HeaderBackgroundColor),
 		BodyColor:   argbToHex(r.BodyBackgroundColor),
+	}
+
+	return base
+}
+
+func parsePaidSticker(r LiveChatPaidStickerRenderer) chat.ChatMessage {
+	base := parseTextMessage(LiveChatTextMessageRenderer{
+		MessageRendererBase: r.MessageRendererBase,
+	})
+
+	base.SuperChat = &chat.SuperChatDetails{
+		Amount:      r.PurchaseAmountText.SimpleText,
+		HeaderColor: argbToHex(r.MoneyChipBackgroundColor),
+		BodyColor:   argbToHex(r.BackgroundColor),
+		StickerURL:  largestThumbnail(r.Sticker.Thumbnails),
+		IsSticker:   true,
 	}
 
 	return base

@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useConfigStore } from '@/stores/config';
 import { useConnectionStore } from '@/stores/connection';
 import { isValidSourceURL } from '@/utils/customSource';
+import { validateYouTubeInput } from '@/utils/validate';
 
 import styles from './Home.module.css';
 
@@ -47,6 +48,14 @@ export function Home() {
         if (isActive(platform)) {
             void Disconnect(platform);
         } else {
+            if (platform === Platform.PlatformYouTube) {
+                const valErr = validateYouTubeInput(getInput(platform));
+                if (valErr) {
+                    setError(t(valErr));
+                    return;
+                }
+            }
+
             setConnecting(platform);
 
             try {
@@ -63,6 +72,45 @@ export function Home() {
         <div className={styles.home}>
             {error && <div className={styles.error}>{error}</div>}
             <div className={styles.cards}>
+                <div className={`${styles.card} ${styles.primaryCard}`}>
+                    <div className={styles.cardHeader}>
+                        <span className={styles.platformLabel}>
+                            <svg
+                                className={styles.platformIcon}
+                                viewBox="0 0 24 24"
+                                fill="#ff0000"
+                            >
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                            </svg>
+                            {t('home.youtube')}
+                        </span>
+                        <span
+                            className={`${styles.status} ${connected[Platform.PlatformYouTube] ? styles.connected : ''} ${waiting[Platform.PlatformYouTube] ? styles.waiting : ''}`}
+                        />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder={t('home.placeholder.channel_or_url', {
+                            defaultValue: 'YouTube Live URL, @handle, or video ID',
+                        })}
+                        value={getInput(Platform.PlatformYouTube)}
+                        onChange={(e) => setInput(Platform.PlatformYouTube, e.target.value)}
+                    />
+                    <button
+                        className={`btn ${isActive(Platform.PlatformYouTube) ? 'btn-danger' : 'btn-primary'}`}
+                        onClick={() => void handleToggle(Platform.PlatformYouTube)}
+                        disabled={!getInput(Platform.PlatformYouTube) || connecting !== null}
+                    >
+                        {connecting === Platform.PlatformYouTube
+                            ? t('home.connecting')
+                            : waiting[Platform.PlatformYouTube]
+                              ? t('home.waiting')
+                              : connected[Platform.PlatformYouTube]
+                                ? t('home.disconnect')
+                                : t('home.connect')}
+                    </button>
+                </div>
+
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
                         <span className={styles.platformLabel}>
@@ -95,45 +143,6 @@ export function Home() {
                             : connected[Platform.PlatformTwitch]
                               ? t('home.disconnect')
                               : t('home.connect')}
-                    </button>
-                </div>
-
-                <div className={styles.card}>
-                    <div className={styles.cardHeader}>
-                        <span className={styles.platformLabel}>
-                            <svg
-                                className={styles.platformIcon}
-                                viewBox="0 0 24 24"
-                                fill="#ff0000"
-                            >
-                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                            </svg>
-                            {t('home.youtube')}
-                        </span>
-                        <span
-                            className={`${styles.status} ${connected[Platform.PlatformYouTube] ? styles.connected : ''} ${waiting[Platform.PlatformYouTube] ? styles.waiting : ''}`}
-                        />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder={t('home.placeholder.channel_or_url', {
-                            defaultValue: '@handle, channel ID, or video URL',
-                        })}
-                        value={getInput(Platform.PlatformYouTube)}
-                        onChange={(e) => setInput(Platform.PlatformYouTube, e.target.value)}
-                    />
-                    <button
-                        className={`btn ${isActive(Platform.PlatformYouTube) ? 'btn-danger' : 'btn-primary'}`}
-                        onClick={() => void handleToggle(Platform.PlatformYouTube)}
-                        disabled={!getInput(Platform.PlatformYouTube) || connecting !== null}
-                    >
-                        {connecting === Platform.PlatformYouTube
-                            ? t('home.connecting')
-                            : waiting[Platform.PlatformYouTube]
-                              ? t('home.waiting')
-                              : connected[Platform.PlatformYouTube]
-                                ? t('home.disconnect')
-                                : t('home.connect')}
                     </button>
                 </div>
 

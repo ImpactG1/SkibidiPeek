@@ -18,7 +18,7 @@
         "placeholder": {
             "channel": "Channel name",
             "channel_id": "Channel ID",
-            "channel_or_url": "Channel, @handle, or video URL",
+            "channel_or_url": "YouTube Live URL, @handle, or video ID",
             "kick_channel": "Channel name"
         },
         "custom_source": {
@@ -176,6 +176,7 @@
         }
     },
     "validation": {
+        "youtube_invalid_input": "Enter a valid YouTube URL, video ID, handle (@...), or channel ID",
         "twitch_channel_length": "Must be 3-25 characters",
         "twitch_channel_chars": "Only letters, numbers, and underscores",
         "kick_channel_length": "Must be 3-26 characters",

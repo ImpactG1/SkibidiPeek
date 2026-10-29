@@ -2,6 +2,42 @@ export function stripWhitespace(value: string): string {
     return value.replace(/\s/g, '');
 }
 
+export function validateYouTubeInput(value: string): string | null {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+        return null;
+    }
+
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+        return null;
+    }
+
+    if (/^@[a-zA-Z0-9_.-]+$/.test(trimmed)) {
+        return null;
+    }
+
+    if (/^UC[a-zA-Z0-9_-]{22}$/.test(trimmed)) {
+        return null;
+    }
+
+    try {
+        const urlStr = trimmed.includes('://') ? trimmed : `https://${trimmed}`;
+        const parsed = new URL(urlStr);
+        const host = parsed.hostname.replace(/^www\./, '').toLowerCase();
+
+        const validHosts = ['youtube.com', 'm.youtube.com', 'music.youtube.com', 'gaming.youtube.com', 'youtu.be'];
+
+        if (validHosts.includes(host)) {
+            return null;
+        }
+    } catch {
+        // Fall through to error
+    }
+
+    return 'validation.youtube_invalid_input';
+}
+
 export function validateTwitchChannel(value: string): string | null {
     const trimmed = value.trim();
 

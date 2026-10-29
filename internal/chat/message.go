@@ -34,6 +34,8 @@ type SuperChatDetails struct {
 	Amount      string `json:"amount"`
 	HeaderColor string `json:"headerColor"`
 	BodyColor   string `json:"bodyColor"`
+	StickerURL  string `json:"stickerUrl,omitempty"`
+	IsSticker   bool   `json:"isSticker,omitempty"`
 }
 
 type ChatMessage struct {
