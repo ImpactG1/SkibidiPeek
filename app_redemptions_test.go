@@ -5,8 +5,8 @@ import (
 	"sync"
 	"testing"
 
-	"ghost-chat/internal/chat/twitch"
-	"ghost-chat/internal/config"
+	"skibidi-peek/internal/chat/twitch"
+	"skibidi-peek/internal/config"
 
 	"github.com/zalando/go-keyring"
 )

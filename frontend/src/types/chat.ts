@@ -1,4 +1,4 @@
-import type { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import type { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 
 export type { Platform };
 

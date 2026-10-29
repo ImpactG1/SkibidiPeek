@@ -18,7 +18,7 @@
         "placeholder": {
             "channel": "Kanalname",
             "channel_id": "Kanal-ID",
-            "channel_or_url": "Kanal, @handle oder Video-URL",
+            "channel_or_url": "YouTube Live URL, @handle oder Video-ID",
             "kick_channel": "Kanalname"
         },
         "custom_source": {
@@ -42,10 +42,11 @@
         "support": "Ghost Chat gefällt dir? Unterstütze das Projekt!",
         "tabs": {
             "general": "Allgemein",
-            "twitch": "Twitch",
+            "donations": "Spenden & Alerts",
             "youtube": "YouTube",
-            "kick": "Kick",
             "themes": "Designs",
+            "twitch": "Twitch",
+            "kick": "Kick",
             "report": "Fehler melden"
         },
         "general": {
@@ -176,6 +177,7 @@
         }
     },
     "validation": {
+        "youtube_invalid_input": "Geben Sie eine gültige YouTube-URL, Video-ID, Handle (@...) oder Kanal-ID ein",
         "twitch_channel_length": "Muss 3-25 Zeichen lang sein",
         "twitch_channel_chars": "Nur Buchstaben, Zahlen und Unterstriche",
         "kick_channel_length": "Muss 3-26 Zeichen lang sein",

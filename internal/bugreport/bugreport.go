@@ -160,7 +160,7 @@ func (r *Reporter) post(body []byte) (Result, bool) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "ghost-chat/"+r.Version)
+	req.Header.Set("User-Agent", "skibidi-peek/"+r.Version)
 
 	client := &http.Client{Timeout: r.timeout()}
 

@@ -33,3 +33,4 @@ yarn.lock
 learning/**/config.json
 
 .scratch
+_reference/

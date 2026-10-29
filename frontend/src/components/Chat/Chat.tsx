@@ -2,8 +2,8 @@ import type React from 'react';
 
 import type { ChatMessage as ChatMessageType } from '@/types/chat';
 
-import { ToggleVanish } from '@bindings/ghost-chat/app.js';
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { ToggleLock } from '@bindings/skibidi-peek/app.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { Events } from '@wailsio/runtime';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,8 +17,6 @@ import { getThemeById, themeToCSS } from '@/types/theme';
 import styles from './Chat.module.css';
 import { ChatMessage } from './ChatMessage';
 import { EventMessage } from './EventMessage';
-
-const MAX_MESSAGES = 500;
 
 export function Chat() {
     const { t } = useTranslation();
@@ -63,9 +61,32 @@ export function Chat() {
             }
 
             setMessages((prev) => {
-                const next = [...prev, msg];
-                if (next.length > MAX_MESSAGES) {
-                    return next.slice(next.length - MAX_MESSAGES);
+                // Deduplicate by message ID to prevent duplicate keys and layout jitter
+                if (prev.some((m) => m.id === msg.id)) {
+                    return prev;
+                }
+
+                // Insert in chronological order by timestamp so sequence is never shuffled
+                const msgTime = new Date(msg.timestamp).getTime();
+                let insertIdx = prev.length;
+                for (let i = prev.length - 1; i >= 0; i--) {
+                    if (new Date(prev[i].timestamp).getTime() <= msgTime) {
+                        insertIdx = i + 1;
+                        break;
+                    }
+                    if (i === 0) {
+                        insertIdx = 0;
+                    }
+                }
+
+                const next = [...prev];
+                next.splice(insertIdx, 0, msg);
+
+                const activeTheme = getThemeById(cfg?.theme?.active_theme_id ?? 'default', cfg?.theme?.custom_themes);
+                const maxCap = activeTheme.max_messages || 100;
+
+                if (next.length > maxCap) {
+                    return next.slice(next.length - maxCap);
                 }
                 return next;
             });
@@ -91,7 +112,8 @@ export function Chat() {
     }, []);
 
     useEffect(() => {
-        if (autoScrollRef.current && !userScrollingRef.current && messagesRef.current) {
+        const isVanished = document.documentElement.hasAttribute('data-vanished');
+        if ((autoScrollRef.current || isVanished) && !userScrollingRef.current && messagesRef.current) {
             messagesRef.current.scrollTop = topToBottom ? 0 : messagesRef.current.scrollHeight;
         }
     }, [messages, topToBottom]);
@@ -221,27 +243,31 @@ export function Chat() {
                     </div>
                 )}
                 <button
-                    className={styles.vanishBtn}
-                    onClick={() => void ToggleVanish()}
-                    title={t('chat.vanish')}
+                    className={styles.lockOverlayBtn}
+                    onClick={() => void ToggleLock()}
+                    title="Lock Overlay & Click-Through (Ctrl+Shift+L)"
                 >
                     <svg
-                        width="14"
-                        height="14"
+                        width="13"
+                        height="13"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="2.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="3"
+                        <rect
+                            x="3"
+                            y="11"
+                            width="18"
+                            height="11"
+                            rx="2"
+                            ry="2"
                         />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
+                    <span>Lock</span>
                 </button>
                 {!connected && (
                     <span className={styles.disconnected}>
@@ -287,6 +313,9 @@ export function Chat() {
                                   showAvatars={theme.show_avatars}
                                   fade={fade}
                                   fadeTimeout={timeoutSeconds}
+                                  animation={theme.animation}
+                                  exitAnimation={theme.exit_animation}
+                                  reduceMotion={config?.general?.reduce_motion}
                                   onFaded={(id) => setMessages((prev) => prev.filter((m) => m.id !== id))}
                               />
                           );

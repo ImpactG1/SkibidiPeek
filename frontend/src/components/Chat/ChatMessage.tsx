@@ -1,6 +1,6 @@
 import type { Badge, ChatMessage as ChatMessageType } from '@/types/chat';
 
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { useEffect, useState } from 'react';
 
 import styles from './ChatMessage.module.css';
@@ -16,6 +16,9 @@ interface Props {
     showAvatars?: boolean;
     fade?: boolean;
     fadeTimeout?: number;
+    animation?: string;
+    exitAnimation?: string;
+    reduceMotion?: boolean;
     onFaded?: (id: string) => void;
 }
 
@@ -47,6 +50,37 @@ function platformClass(platform: Platform) {
     }
 
     return '';
+}
+
+function getEntranceClass(animation?: string): string {
+    switch (animation) {
+        case 'slide':
+            return styles.animateSlide;
+        case 'fade':
+            return styles.animateFade;
+        case 'pop':
+            return styles.animatePop;
+        case 'bounce':
+            return styles.animateBounce;
+        case 'typewriter':
+            return styles.animateTypewriter;
+        case 'glitch':
+            return styles.animateGlitch;
+        default:
+            return '';
+    }
+}
+
+function getExitClass(exitAnimation?: string): string {
+    switch (exitAnimation) {
+        case 'slide':
+            return styles.exitSlide;
+        case 'shrink':
+            return styles.exitShrink;
+        case 'fade':
+        default:
+            return styles.exitFade;
+    }
 }
 
 function BadgeList({ badges, hidden }: { badges: Badge[]; hidden?: boolean }) {
@@ -140,6 +174,9 @@ export function ChatMessage({
     showAvatars = true,
     fade,
     fadeTimeout,
+    animation,
+    exitAnimation,
+    reduceMotion,
     onFaded,
 }: Props) {
     const [fading, setFading] = useState(false);
@@ -159,7 +196,12 @@ export function ChatMessage({
     };
 
     const pc = platformClass(message.platform);
-    const wrapperClass = `${styles.message} ${pc} ${fading ? styles.fade : ''}`;
+    const animClass = reduceMotion
+        ? styles.reducedMotion
+        : fading
+          ? getExitClass(exitAnimation)
+          : getEntranceClass(animation);
+    const wrapperClass = `${styles.message} ${pc} ${animClass}`;
     const body =
         message.fragments && message.fragments.length > 0 ? (
             renderFragments(message.fragments, { hideGifs })
@@ -174,7 +216,7 @@ export function ChatMessage({
 
         return (
             <div
-                className={`${styles.message} ${styles.superChatWrapper} ${pc} ${fading ? styles.fade : ''}`}
+                className={`${styles.message} ${styles.superChatWrapper} ${pc} ${animClass}`}
                 onAnimationEnd={handleAnimationEnd}
             >
                 <div
@@ -206,7 +248,7 @@ export function ChatMessage({
     if (message.membershipEvent) {
         return (
             <div
-                className={`${styles.message} ${styles.membershipWrapper} ${pc} ${fading ? styles.fade : ''}`}
+                className={`${styles.message} ${styles.membershipWrapper} ${pc} ${animClass}`}
                 onAnimationEnd={handleAnimationEnd}
             >
                 <BadgeList

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useConfigStore } from '@/stores/config';
 
+import { DonationSettings } from './DonationSettings';
 import { GeneralSettings } from './GeneralSettings';
 import { KickSettings } from './KickSettings';
 import { ReportSettings } from './ReportSettings';
@@ -12,7 +13,7 @@ import { ThemeSettings } from './ThemeSettings';
 import { TwitchSettings } from './TwitchSettings';
 import { YouTubeSettings } from './YouTubeSettings';
 
-const tabKeys = ['general', 'twitch', 'youtube', 'kick', 'themes', 'report'] as const;
+const tabKeys = ['general', 'donations', 'youtube', 'themes', 'twitch', 'kick', 'report'] as const;
 type Tab = (typeof tabKeys)[number];
 
 export function Settings({ onTabChange }: { onTabChange?: (tab: string) => void }) {
@@ -62,10 +63,11 @@ export function Settings({ onTabChange }: { onTabChange?: (tab: string) => void 
             </nav>
             <div className={styles.content}>
                 {activeTab === 'general' && <GeneralSettings />}
-                {activeTab === 'twitch' && <TwitchSettings />}
+                {activeTab === 'donations' && <DonationSettings />}
                 {activeTab === 'youtube' && <YouTubeSettings />}
-                {activeTab === 'kick' && <KickSettings />}
                 {activeTab === 'themes' && <ThemeSettings />}
+                {activeTab === 'twitch' && <TwitchSettings />}
+                {activeTab === 'kick' && <KickSettings />}
                 {activeTab === 'report' && <ReportSettings />}
             </div>
             {saved && <span className={styles.saved}>Saved</span>}

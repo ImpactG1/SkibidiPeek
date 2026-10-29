@@ -32,7 +32,7 @@ func Dir() (string, error) {
 		return "", fmt.Errorf("resolve user config dir: %w", err)
 	}
 
-	return filepath.Join(configDir, "ghost-chat", "logs"), nil
+	return filepath.Join(configDir, "skibidi-peek", "logs"), nil
 }
 
 func Setup(dev bool) (io.Closer, error) {

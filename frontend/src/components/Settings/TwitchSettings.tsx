@@ -1,8 +1,8 @@
-import type { TwitchConfig } from '@bindings/ghost-chat/internal/config/models.js';
+import type { TwitchConfig } from '@bindings/skibidi-peek/internal/config/models.js';
 
 import type { DeepPartial } from '@/types/utils';
 
-import { TwitchLogout, TwitchStartLogin } from '@bindings/ghost-chat/app.js';
+import { TwitchLogout, TwitchStartLogin } from '@bindings/skibidi-peek/app.js';
 import { Browser } from '@wailsio/runtime';
 import { useTranslation } from 'react-i18next';
 

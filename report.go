@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"ghost-chat/internal/bugreport"
-	"ghost-chat/internal/config"
-	"ghost-chat/internal/logging"
+	"skibidi-peek/internal/bugreport"
+	"skibidi-peek/internal/config"
+	"skibidi-peek/internal/logging"
 )
 
 func (a *App) reporter() *bugreport.Reporter {

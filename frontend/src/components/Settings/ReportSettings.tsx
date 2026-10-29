@@ -1,8 +1,8 @@
-import type { Diagnostics } from '@bindings/ghost-chat/internal/bugreport/models.js';
+import type { Diagnostics } from '@bindings/skibidi-peek/internal/bugreport/models.js';
 
 import type { ReportErrors, ReportField, ReportValues } from './reportValidation';
 
-import { PreviewDiagnostics } from '@bindings/ghost-chat/app.js';
+import { PreviewDiagnostics } from '@bindings/skibidi-peek/app.js';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

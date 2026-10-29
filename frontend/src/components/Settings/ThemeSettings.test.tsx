@@ -7,7 +7,7 @@ import { ThemeSettings } from './ThemeSettings';
 
 const store = vi.hoisted(() => ({ config: null as unknown, update: () => Promise.resolve() }));
 
-vi.mock('@bindings/ghost-chat/app.js', () => ({
+vi.mock('@bindings/skibidi-peek/app.js', () => ({
     ExportTheme: vi.fn(),
 }));
 

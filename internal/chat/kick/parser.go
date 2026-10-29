@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 // reEmote matches inline emote tokens in Kick message content: [emote:{id}:{name}]

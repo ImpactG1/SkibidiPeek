@@ -30,4 +30,25 @@ describe('themeToCSS gif size', () => {
             expect(theme.gif_size, theme.id).toBeGreaterThan(0);
         }
     });
+
+    it('includes all required built-in themes including neon, retro-terminal, glass, and skibidi', () => {
+        const ids = BUILT_IN_THEMES.map((t) => t.id);
+
+        expect(ids).toContain('default');
+        expect(ids).toContain('compact');
+        expect(ids).toContain('bubble');
+        expect(ids).toContain('neon');
+        expect(ids).toContain('retro-terminal');
+        expect(ids).toContain('glass');
+        expect(ids).toContain('skibidi');
+    });
+
+    it('provides valid animation properties for built-in themes', () => {
+        for (const theme of BUILT_IN_THEMES) {
+            expect(theme.name.length).toBeGreaterThan(0);
+            expect(typeof theme.animation).toBe('string');
+            expect(typeof theme.exit_animation).toBe('string');
+            expect(theme.max_messages).toBeGreaterThan(0);
+        }
+    });
 });

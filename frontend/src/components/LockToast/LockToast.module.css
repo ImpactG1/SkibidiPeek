@@ -1,0 +1,91 @@
+.toastContainer {
+    position: fixed;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    animation: toastEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toastContainer.closing {
+    animation: toastExit 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    background: rgba(18, 18, 24, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(121, 40, 202, 0.25);
+    color: #ffffff;
+    font-family: inherit;
+}
+
+.card.locked {
+    border-color: rgba(0, 223, 216, 0.4);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        0 0 16px rgba(0, 223, 216, 0.3);
+}
+
+.card.unlocked {
+    border-color: rgba(255, 0, 85, 0.4);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        0 0 16px rgba(255, 0, 85, 0.3);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.icon {
+    font-size: 14px;
+}
+
+.hotkey {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 1px;
+}
+
+@keyframes toastEnter {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -12px) scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+@keyframes toastExit {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -8px) scale(0.95);
+    }
+}

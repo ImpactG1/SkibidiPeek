@@ -3,7 +3,7 @@ import type React from 'react';
 import type { ChatMessage as ChatMessageType } from '@/types/chat';
 import type { Theme } from '@/types/theme';
 
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 
 import { ChatMessage } from '@/components/Chat/ChatMessage';
 import { EventMessage } from '@/components/Chat/EventMessage';
@@ -385,6 +385,7 @@ export function ThemePreview() {
                             showAvatars={theme.show_avatars}
                             showPlatformIcon
                             showTimestamp={false}
+                            animation={theme.animation}
                         />
                     )
                 )}

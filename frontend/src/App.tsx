@@ -1,6 +1,6 @@
-import type { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import type { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 
-import { ExpandForSettings, ShrinkToChat } from '@bindings/ghost-chat/app.js';
+import { ExpandForSettings, ShrinkToChat } from '@bindings/skibidi-peek/app.js';
 import { Events } from '@wailsio/runtime';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,13 +8,17 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 
 import { Chat } from '@/components/Chat/Chat';
 import { CustomSource } from '@/components/CustomSource/CustomSource';
+import { DonationOverlay } from '@/components/DonationOverlay/DonationOverlay';
+import { FloatingUnlockBar } from '@/components/FloatingUnlockBar/FloatingUnlockBar';
 import { Home } from '@/components/Home/Home';
+import { LockToast } from '@/components/LockToast/LockToast';
 import { Settings } from '@/components/Settings/Settings';
 import { ThemePreview } from '@/components/Settings/ThemePreview';
 import { TitleBar } from '@/components/TitleBar/TitleBar';
 import { useAuthStore } from '@/stores/auth';
 import { useConfigStore } from '@/stores/config';
 import { useConnectionStore } from '@/stores/connection';
+import { useDonationStore } from '@/stores/donation';
 
 import styles from './App.module.css';
 
@@ -22,11 +26,15 @@ function App() {
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState('general');
     const [vanished, setVanished] = useState(false);
+    const [lockedToast, setLockedToast] = useState<boolean | null>(null);
     const [updateInfo, setUpdateInfo] = useState<{ version: string; url: string } | null>(null);
     const { i18n } = useTranslation();
     const load = useConfigStore((s) => s.load);
     const loaded = useConfigStore((s) => s.loaded);
     const language = useConfigStore((s) => s.config?.general?.language);
+    const lockKeybind = useConfigStore(
+        (s) => s.config?.keybinds?.lock?.keybind || s.config?.keybinds?.vanish?.keybind || 'Ctrl+Shift+L'
+    );
     const setConnected = useConnectionStore((s) => s.setConnected);
     const setWaiting = useConnectionStore((s) => s.setWaiting);
     const seedAuth = useAuthStore((s) => s.seed);
@@ -64,10 +72,43 @@ function App() {
             setConnected(platform, false);
         });
 
+        const cancelDonation = Events.On('chat:donation', (ev) => {
+            const raw = ev.data as {
+                id?: string;
+                username?: string;
+                avatar?: string;
+                text?: string;
+                superChat?: {
+                    amount?: string;
+                    headerColor?: string;
+                    bodyColor?: string;
+                    stickerUrl?: string;
+                    isSticker?: boolean;
+                };
+                membershipEvent?: boolean;
+            };
+
+            const type = raw.superChat?.isSticker ? 'sticker' : raw.membershipEvent ? 'membership' : 'superchat';
+
+            useDonationStore.getState().pushDonation({
+                id: raw.id || `donation-${Date.now()}`,
+                type,
+                username: raw.username || 'Anonymous',
+                avatar: raw.avatar,
+                amount: raw.superChat?.amount,
+                headerColor: raw.superChat?.headerColor,
+                bodyColor: raw.superChat?.bodyColor,
+                message: raw.text,
+                stickerUrl: raw.superChat?.stickerUrl,
+                timestamp: Date.now(),
+            });
+        });
+
         return () => {
             cancelConnected();
             cancelWaiting();
             cancelDisconnected();
+            cancelDonation();
         };
     }, [setConnected, setWaiting]);
 
@@ -101,11 +142,20 @@ function App() {
     }, [seedAuth, setAuthPending, setAuthConnected, setAuthError, setAuthLoggedOut]);
 
     useEffect(() => {
+        const cancelLock = Events.On('lock:toggle', (ev) => {
+            const isLocked = ev.data as boolean;
+            setVanished(isLocked);
+            setLockedToast(isLocked);
+        });
+
         const cancelVanish = Events.On('vanish:toggle', (ev) => {
-            setVanished(ev.data as boolean);
+            const isVanished = ev.data as boolean;
+            setVanished(isVanished);
+            setLockedToast(isVanished);
         });
 
         return () => {
+            cancelLock();
             cancelVanish();
         };
     }, []);
@@ -123,10 +173,31 @@ function App() {
     useEffect(() => {
         if (vanished) {
             document.documentElement.setAttribute('data-vanished', '');
+            document.documentElement.setAttribute('data-locked', '');
         } else {
             document.documentElement.removeAttribute('data-vanished');
+            document.documentElement.removeAttribute('data-locked');
         }
     }, [vanished]);
+
+    const bgOpacity = useConfigStore((s) => s.config?.general?.background_opacity);
+    const textOpacity = useConfigStore((s) => s.config?.general?.text_opacity);
+    const reduceMotion = useConfigStore((s) => s.config?.general?.reduce_motion);
+
+    useEffect(() => {
+        const bg = bgOpacity ?? 1.0;
+        const txt = textOpacity ?? 1.0;
+        const rm = reduceMotion ?? false;
+
+        document.documentElement.style.setProperty('--app-bg-opacity', String(bg));
+        document.documentElement.style.setProperty('--app-text-opacity', String(txt));
+
+        if (rm) {
+            document.documentElement.setAttribute('data-reduce-motion', '');
+        } else {
+            document.documentElement.removeAttribute('data-reduce-motion');
+        }
+    }, [bgOpacity, textOpacity, reduceMotion]);
 
     useEffect(() => {
         if (language && language !== i18n.language) {
@@ -144,6 +215,12 @@ function App() {
                 className={`${styles.app} ${settingsOpen ? styles.withSettings : ''} ${vanished ? styles.vanished : ''}`}
                 data-vanished={vanished || undefined}
             >
+                <DonationOverlay />
+                <LockToast
+                    locked={lockedToast}
+                    hotkeyHint={lockKeybind}
+                />
+                {vanished && <FloatingUnlockBar hotkey={lockKeybind} />}
                 <TitleBar
                     onSettingsToggle={toggleSettings}
                     settingsOpen={settingsOpen}

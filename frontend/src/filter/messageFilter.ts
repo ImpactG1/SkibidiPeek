@@ -1,8 +1,8 @@
-import type { Config, TwitchEvents } from '@bindings/ghost-chat/internal/config/models.js';
+import type { Config, TwitchEvents } from '@bindings/skibidi-peek/internal/config/models.js';
 
 import type { ChatMessage } from '@/types/chat';
 
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 
 const KNOWN_BOTS = new Set([
     'nightbot',

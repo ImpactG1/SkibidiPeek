@@ -1,4 +1,4 @@
-import { TwitchAuthStatus } from '@bindings/ghost-chat/app.js';
+import { TwitchAuthStatus } from '@bindings/skibidi-peek/app.js';
 import { create } from 'zustand';
 
 export type AuthStatus = 'loggedOut' | 'pending' | 'connected';

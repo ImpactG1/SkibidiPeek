@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"ghost-chat/internal/chat"
-	"ghost-chat/internal/logging"
+	"skibidi-peek/internal/chat"
+	"skibidi-peek/internal/logging"
 )
 
 // IRC message structure (raw line from Twitch):

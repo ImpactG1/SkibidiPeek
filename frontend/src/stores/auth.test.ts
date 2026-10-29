@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useAuthStore } from './auth';
 
-vi.mock('@bindings/ghost-chat/app.js', () => ({
+vi.mock('@bindings/skibidi-peek/app.js', () => ({
     TwitchAuthStatus: vi.fn(() => Promise.resolve({ loggedIn: false, login: '' })),
 }));
 

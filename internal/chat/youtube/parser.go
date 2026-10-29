@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 func parseActions(actions []Action) (messages []chat.ChatMessage, deletions []string) {

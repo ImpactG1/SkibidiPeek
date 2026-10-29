@@ -4,15 +4,16 @@
 export {
     Config,
     CustomSource,
+    DonationConfig,
     General,
     Keybinds,
     KickConfig,
+    LockKeybind,
     Theme,
     ThemeConfig,
     TwitchAccount,
     TwitchConfig,
     TwitchEvents,
-    VanishKeybind,
     WindowState,
     YouTubeConfig
 } from "./models.js";

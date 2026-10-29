@@ -1,147 +1,95 @@
 <p align="center">
-  <img src="build/appicon.png" alt="Ghost Chat" width="128" />
+  <img src="frontend/src/assets/skibidipeek.svg" alt="SkibidiPeek" width="128" />
 </p>
 
-<h1 align="center">Ghost Chat</h1>
+<h1 align="center">SkibidiPeek</h1>
 
 <p align="center">
-  Transparent chat overlay for streamers. Twitch, YouTube, and Kick in one window.
-</p>
-
-<p align="center">
-  <a href="https://github.com/Enubia/ghost-chat/releases/latest">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/enubia/ghost-chat">
-  </a>
-  <a href="https://github.com/Enubia/ghost-chat/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
-    <img alt="GitHub issues" src="https://img.shields.io/github/issues/enubia/ghost-chat">
-  </a>
+  <strong>Lightweight, click-through YouTube Live chat overlay for single-monitor streamers.</strong>
 </p>
 
 <p align="center">
-  <a href="https://www.paypal.com/donate/?hosted_button_id=RQFDVMBP397KG">
-    <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="Donate with PayPal" width="145" />
-  </a>
-  <a href="https://ko-fi.com/enubia">
-    <img src="https://img.shields.io/badge/Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Ko-Fi" width="126" />
-  </a>
+  Always on top &bull; Click-through lock mode &bull; Super Chat pop-ups &bull; Customizable themes & animations
 </p>
 
 ---
 
-Ghost Chat is a lightweight desktop overlay that displays live chat from **Twitch**, **YouTube**, and **Kick** directly on your screen. No browser needed. Connect to one or all three platforms at once and see messages in a single, unified stream.
+## What is SkibidiPeek?
 
-Built with Go and Wails v3 for native performance. Runs on macOS and Windows.
+SkibidiPeek is built specifically for streamers who only have one monitor. Paste a YouTube live stream link or video ID, and your chat floats directly above your games and desktop.
 
-## Screenshots
+### Key Features
+- **YouTube First**: Supports full watch URLs, short links (`youtu.be`), live channel URLs (`youtube.com/live/...`), popout URLs (`youtube.com/live_chat?v=...`), or bare 11-character video IDs.
+- **Always on Top**: Persistent window overlay that stays above other windows and automatically re-asserts always-on-top when focus is lost.
+- **Lock / Unlock Mode**:
+  - **Unlocked**: Move, resize, access settings and control bar.
+  - **Locked**: Fully transparent and click-through (`Ctrl+Shift+L` global hotkey or tray menu toggle). Mouse clicks pass through directly to games or underlying apps.
+  - Brief visual indicator toast confirms state changes.
+- **Donation & Super Chat Pop-ups**: Detects paid messages, stickers, and memberships with customizable pop-up cards, sound, and a test button.
+- **Rich Themes & Animations**: Built-in themes (Default, Compact, Bubble, Neon, Retro Terminal, Glass, Meme/Skibidi), entrance/exit animations, independent background & text opacity, and live preview editor.
+- **Ultra-low Resource Usage**: Native Go + Wails v3 + React architecture designed to idle under 2% CPU.
 
-<p align="center">
-  <img src="images/index.png" alt="Home screen" width="280" />
-  <img src="images/chat.png" alt="Live chat" width="280" />
-  <img src="images/transparent.png" alt="Vanish mode" width="280" />
-</p>
+---
 
-<details>
-<summary>Settings</summary>
-<p align="center">
-  <img src="images/general.png" alt="General settings" width="45%" />
-  <img src="images/twitch.png" alt="Twitch settings" width="45%" />
-</p>
-<p align="center">
-  <img src="images/youtube.png" alt="YouTube settings" width="45%" />
-  <img src="images/kick.png" alt="Kick settings" width="45%" />
-</p>
-<p align="center">
-  <img src="images/themes.png" alt="Theme editor" width="90%" />
-</p>
-</details>
+## Fullscreen & Display Guidance
 
-## Reporting bugs
+> [!IMPORTANT]
+> **Borderless Windowed Mode Required for Games**
+> SkibidiPeek uses native Desktop Window Manager (DWM) compositing with transparency and pass-through.
+> - **Borderless Windowed** / **Windowed**: Fully supported. Chat floats seamlessly over your game, and clicks pass right through to your game controls when Locked.
+> - **Exclusive Fullscreen**: Direct3D/Vulkan exclusive fullscreen bypasses the Windows desktop compositor, hiding all desktop overlay windows. Set your game to "Borderless" or "Borderless Windowed" in display settings.
 
-Open Settings → **Report a bug** in the app. No GitHub account is needed, and you can attach diagnostics (app version, OS, connected platforms, recent log lines) after previewing them. Reports reach the maintainer privately; the optional Discord username is only used to contact you for details. You can still [open a GitHub issue](https://github.com/Enubia/ghost-chat/issues/new/choose) if you prefer.
+---
 
-<p align="center">
-  <img src="images/report.png" alt="Report a bug" width="280" />
-</p>
+## Global Hotkeys & Controls
 
-## Features
+- **Toggle Lock Mode**: `Ctrl+Shift+L` (configurable in Settings &bull; General)
+- **Tray Menu**: Right-click the SkibidiPeek tray icon to toggle lock, center on screen, open the config folder, or quit.
 
-- **Multi-platform chat** - Twitch IRC, YouTube Live Chat, and Kick in one overlay
-- **Vanish mode** - Toggle transparency and click-through with a global hotkey
-- **Custom themes** - Built-in themes (Default, Compact, Bubble) or create your own
-- **Emote support** - Native Twitch, BTTV, FFZ, 7TV, YouTube custom emoji, Kick emotes
-- **Badge rendering** - Twitch badges via GQL API, YouTube member/mod/owner badges
-- **Super Chat & Membership** - YouTube Super Chat and membership events with styling
-- **System tray** - Runs quietly in the tray with quick access to vanish, config, and quit
-- **i18n** - English and German, more languages welcome
-- **Fade messages** - Auto-fade with configurable timeout per platform
-- **Filtering** - Hide bots, commands, or specific users per platform
+---
 
-## Downloads
-
-| Platform | Download |
-|----------|----------|
-| macOS (Universal) | [ghost-chat-macos.zip](https://github.com/Enubia/ghost-chat/releases/latest) |
-| Windows | [ghost-chat.exe](https://github.com/Enubia/ghost-chat/releases/latest) |
-
-## Development
+## Development & Building
 
 ### Prerequisites
-
-- Go 1.25+
-- Node.js 20+
-- pnpm
-- Wails v3 CLI: `go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-beta.27`
-- macOS: Xcode Command Line Tools (`xcode-select --install`)
-- Windows: WebView2 (included in Windows 10/11)
-
-Verify: `wails3 doctor`
+- Go 1.25+ (configured in `D:\go`)
+- Node.js 20+ and pnpm
+- Wails v3 CLI (`github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-beta.27`)
 
 ### Commands
-
 ```bash
-wails3 dev                # dev mode with hot-reload
-wails3 task build         # production binary
-wails3 task package       # .app bundle (macOS) or .exe (Windows)
-go test ./internal/...    # Go tests
-cd frontend && pnpm fix   # lint + format
+# Run dev mode with hot reload
+wails3 dev
+
+# Run Go tests
+go test ./...
+
+# Frontend checks (oxlint, oxfmt, vitest, tsc)
+cd frontend && pnpm fix
+cd frontend && pnpm test
+cd frontend && pnpm build
+
+# Build production executable (.exe)
+wails3 task build           # compiles to bin/skibidi-peek.exe
+
+# Package installer / distribution
+wails3 task package
 ```
 
-### Architecture
+---
 
-| Layer | Tech |
-|-------|------|
-| Backend | Go, Wails v3 bindings + events |
-| Frontend | React, TypeScript, Zustand, CSS Modules |
-| Chat clients | Twitch IRC (WebSocket), YouTube innertube (HTTP polling), Kick Pusher (WebSocket) |
-| Build | Taskfile, Vite, GitHub Actions |
+## Notices and Attribution
 
-See [CLAUDE.md](CLAUDE.md) for the full project structure and conventions.
+SkibidiPeek is forked and remodeled from open-source projects:
 
-## Translations
+1. **Ghost Chat** (Base Project)
+   - Created by [Marco Schuster](https://github.com/Enubia/ghost-chat)
+   - Licensed under the Don't Be A Dick Public License (DBAD v1.2)
+   - Provided the foundational Go + Wails v3 overlay framework, window transparency,
+     global hotkeys, and base chat ingestion clients.
 
-Ghost Chat uses i18next. To add a language:
+2. **Live Chat Overlay** (Reference Architecture)
+   - Created by [Aaron Parecki](https://github.com/aaronpk/live-chat-overlay), with initial concepts by ROJ BTS.
+   - Provided reference architecture for detecting YouTube Super Chats, Super Stickers,
+     membership milestones, tier styling, and overlay presentation logic.
 
-1. Copy `frontend/public/locales/en-US/translation.json`
-2. Create a new folder with your locale code (e.g. `fr-FR`)
-3. Translate the strings
-4. Submit a PR
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-<p align="center">
-  <a href="https://github.com/enubia/ghost-chat/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=enubia/ghost-chat" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://star-history.com/#enubia/ghost-chat&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=enubia/ghost-chat&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=enubia/ghost-chat&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=enubia/ghost-chat&type=Date" />
-    </picture>
-  </a>
-</p>
+See [NOTICE.md](NOTICE.md) for full attribution details.

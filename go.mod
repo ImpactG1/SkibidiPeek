@@ -1,4 +1,4 @@
-module ghost-chat
+module skibidi-peek
 
 go 1.25.0
 

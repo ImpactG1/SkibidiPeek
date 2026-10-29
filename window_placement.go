@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ghost-chat/internal/config"
+	"skibidi-peek/internal/config"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )

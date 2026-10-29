@@ -1,8 +1,8 @@
-import type { Config } from '@bindings/ghost-chat/internal/config/models.js';
+import type { Config } from '@bindings/skibidi-peek/internal/config/models.js';
 
 import type { DeepPartial } from '@/types/utils';
 
-import { GetConfig, UpdateConfig } from '@bindings/ghost-chat/app.js';
+import { GetConfig, UpdateConfig } from '@bindings/skibidi-peek/app.js';
 import { create } from 'zustand';
 
 interface ConfigState {

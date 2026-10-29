@@ -18,7 +18,7 @@
         "placeholder": {
             "channel": "Channel name",
             "channel_id": "Channel ID",
-            "channel_or_url": "Channel, @handle, or video URL",
+            "channel_or_url": "YouTube Live URL, @handle, or video ID",
             "kick_channel": "Channel name"
         },
         "custom_source": {
@@ -42,10 +42,11 @@
         "support": "Enjoying Ghost Chat? Consider supporting the project!",
         "tabs": {
             "general": "General",
-            "twitch": "Twitch",
+            "donations": "Donations & Alerts",
             "youtube": "YouTube",
-            "kick": "Kick",
             "themes": "Themes",
+            "twitch": "Twitch",
+            "kick": "Kick",
             "report": "Report a bug"
         },
         "general": {
@@ -152,7 +153,14 @@
             "avatar_size_desc": "Changes the size of user profile pictures",
             "export": "Export",
             "import": "Import",
-            "llm_hint": "Tip: Export your theme and ask an AI chatbot to adjust it for you, then import it back."
+            "llm_hint": "Tip: Export your theme and ask an AI chatbot to adjust it for you, then import it back.",
+            "animations": "Animations & Limits",
+            "entrance_animation": "Entrance Animation",
+            "entrance_animation_desc": "Visual animation when a new message appears",
+            "exit_animation": "Exit Animation",
+            "exit_animation_desc": "Visual animation when an old message fades out",
+            "max_messages": "Max Messages",
+            "max_messages_desc": "Caps the chat DOM to the last N messages for performance"
         },
         "report": {
             "title": "Title",
@@ -176,6 +184,7 @@
         }
     },
     "validation": {
+        "youtube_invalid_input": "Enter a valid YouTube URL, video ID, handle (@...), or channel ID",
         "twitch_channel_length": "Must be 3-25 characters",
         "twitch_channel_chars": "Only letters, numbers, and underscores",
         "kick_channel_length": "Must be 3-26 characters",

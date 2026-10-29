@@ -3,7 +3,7 @@ package youtube
 import (
 	"context"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 // LiveChatSource represents a backend source for streaming live YouTube chat messages.
@@ -26,4 +26,3 @@ type LiveChatSource interface {
 	// Close terminates the source connection and releases resources.
 	Close() error
 }
-

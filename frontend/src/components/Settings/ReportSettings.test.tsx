@@ -1,6 +1,6 @@
 import type { ReportFormProps } from './ReportSettings';
 
-import { Diagnostics, Result } from '@bindings/ghost-chat/internal/bugreport/models.js';
+import { Diagnostics, Result } from '@bindings/skibidi-peek/internal/bugreport/models.js';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -15,7 +15,7 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-vi.mock('@bindings/ghost-chat/app.js', () => ({
+vi.mock('@bindings/skibidi-peek/app.js', () => ({
     PreviewDiagnostics: vi.fn(),
     SubmitBugReport: submit,
 }));

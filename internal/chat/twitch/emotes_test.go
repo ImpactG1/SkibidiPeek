@@ -3,7 +3,7 @@ package twitch
 import (
 	"testing"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 func TestResolveEmotes_SetsEmoteKindAndKeepsExisting(t *testing.T) {
