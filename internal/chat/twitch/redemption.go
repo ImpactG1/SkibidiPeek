@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 const EventTypeChannelPoints = "channel_points_redemption"

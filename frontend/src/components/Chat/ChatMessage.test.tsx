@@ -1,6 +1,6 @@
 import type { ChatMessage as ChatMessageType } from '@/types/chat';
 
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 

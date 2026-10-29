@@ -1,4 +1,4 @@
-import { ToggleVanish } from '@bindings/ghost-chat/app.js';
+import { ToggleVanish } from '@bindings/skibidi-peek/app.js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

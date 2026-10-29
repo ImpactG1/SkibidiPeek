@@ -258,12 +258,29 @@ button {
 }
 
 html[data-vanished],
-html[data-vanished] body {
+html[data-vanished] body,
+html[data-locked],
+html[data-locked] body {
     background: transparent !important;
 }
 
-html[data-vanished] ::-webkit-scrollbar {
+html[data-vanished] ::-webkit-scrollbar,
+html[data-locked] ::-webkit-scrollbar {
     display: none;
+}
+
+html[data-reduce-motion] * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
 }
 
 ::-webkit-scrollbar {

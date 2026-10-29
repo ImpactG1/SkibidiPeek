@@ -34,6 +34,7 @@
     padding: 8px;
     display: flex;
     flex-direction: column;
+    opacity: var(--app-text-opacity, 1);
 }
 
 .messagesSpacer {

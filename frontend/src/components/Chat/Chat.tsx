@@ -2,8 +2,8 @@ import type React from 'react';
 
 import type { ChatMessage as ChatMessageType } from '@/types/chat';
 
-import { ToggleVanish } from '@bindings/ghost-chat/app.js';
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { ToggleLock } from '@bindings/skibidi-peek/app.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { Events } from '@wailsio/runtime';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -222,7 +222,7 @@ export function Chat() {
                 )}
                 <button
                     className={styles.vanishBtn}
-                    onClick={() => void ToggleVanish()}
+                    onClick={() => void ToggleLock()}
                     title={t('chat.vanish')}
                 >
                     <svg

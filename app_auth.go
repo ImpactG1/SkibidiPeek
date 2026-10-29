@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"ghost-chat/internal/auth"
-	"ghost-chat/internal/config"
+	"skibidi-peek/internal/auth"
+	"skibidi-peek/internal/config"
 )
 
 type TwitchAuthStatus struct {

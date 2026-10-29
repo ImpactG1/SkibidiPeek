@@ -90,7 +90,7 @@ func TestSubmitSent(t *testing.T) {
 		t.Fatalf("path %s", f.path)
 	}
 
-	if f.header.Get("Content-Type") != "application/json" || f.header.Get("User-Agent") != "ghost-chat/1.2.3" {
+	if f.header.Get("Content-Type") != "application/json" || f.header.Get("User-Agent") != "skibidi-peek/1.2.3" {
 		t.Fatalf("headers %v", f.header)
 	}
 

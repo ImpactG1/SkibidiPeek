@@ -5,11 +5,11 @@ version: '3'
 
 # This information is used to generate the build assets.
 info:
-  companyName: "enubia"
-  productName: "Ghost Chat"
-  productIdentifier: "com.enubia.ghost-chat"
+  companyName: "SkibidiPeek"
+  productName: "SkibidiPeek"
+  productIdentifier: "com.skibidipeek.app"
   description: "Desktop chat overlay for streamers"
-  copyright: "(c) 2026, enubia"
+  copyright: "(c) 2026, SkibidiPeek"
   version: "4.0.0"
   # cfBundleIconName: "appicon" # The macOS icon name in Assets.car icon bundles (optional)
   #                               # Should match the name of your .icon file without the extension

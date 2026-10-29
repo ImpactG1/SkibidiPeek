@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	keyringService = "ghost-chat"
+	keyringService = "skibidi-peek"
 	keyringUser    = "twitch"
 )
 

@@ -1,8 +1,8 @@
-import type { YouTubeConfig } from '@bindings/ghost-chat/internal/config/models.js';
+import type { YouTubeConfig } from '@bindings/skibidi-peek/internal/config/models.js';
 
 import type { DeepPartial } from '@/types/utils';
 
-import { ResolveYouTubeVideo } from '@bindings/ghost-chat/app.js';
+import { ResolveYouTubeVideo } from '@bindings/skibidi-peek/app.js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

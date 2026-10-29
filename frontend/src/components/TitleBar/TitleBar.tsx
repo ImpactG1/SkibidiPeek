@@ -1,7 +1,8 @@
+import { ToggleLock } from '@bindings/skibidi-peek/app.js';
 import { Window, Browser } from '@wailsio/runtime';
 import { useTranslation } from 'react-i18next';
 
-import ghostSvg from '@/assets/ghost.svg';
+import skibidiLogo from '@/assets/skibidipeek.svg';
 import { useConfigStore } from '@/stores/config';
 
 import styles from './TitleBar.module.css';
@@ -14,18 +15,19 @@ interface TitleBarProps {
 
 export function TitleBar({ onSettingsToggle, settingsOpen, updateInfo }: TitleBarProps) {
     const { t } = useTranslation();
-    const hotkeySet = useConfigStore((s) => !!s.config?.keybinds?.vanish?.keybind);
+    const lockKeybind = useConfigStore(
+        (s) => s.config?.keybinds?.lock?.keybind || s.config?.keybinds?.vanish?.keybind || 'Ctrl+Shift+L'
+    );
 
     return (
         <div className={styles.titlebar}>
             <div className={styles.drag}>
                 <img
-                    src={ghostSvg}
-                    alt=""
+                    src={skibidiLogo}
+                    alt="SkibidiPeek"
                     className={styles.logo}
                 />
-                <span className={styles.title}>Ghost Chat</span>
-                {!hotkeySet && <span className={styles.hotkeyHint}>{t('titlebar.no_hotkey')}</span>}
+                <span className={styles.title}>SkibidiPeek</span>
                 {updateInfo && (
                     <button
                         className={styles.updateBadge}
@@ -37,6 +39,32 @@ export function TitleBar({ onSettingsToggle, settingsOpen, updateInfo }: TitleBa
                 )}
             </div>
             <div className={styles.controls}>
+                <button
+                    className={styles.controlBtn}
+                    onClick={() => void ToggleLock()}
+                    title={`Lock Overlay (${lockKeybind}) - Click-through`}
+                >
+                    <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <rect
+                            x="3"
+                            y="11"
+                            width="18"
+                            height="11"
+                            rx="2"
+                            ry="2"
+                        />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                </button>
                 <button
                     className={`${styles.controlBtn} ${settingsOpen ? styles.active : ''}`}
                     onClick={onSettingsToggle}

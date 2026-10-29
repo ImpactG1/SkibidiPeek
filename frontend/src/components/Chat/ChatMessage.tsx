@@ -1,6 +1,6 @@
 import type { Badge, ChatMessage as ChatMessageType } from '@/types/chat';
 
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { useEffect, useState } from 'react';
 
 import styles from './ChatMessage.module.css';

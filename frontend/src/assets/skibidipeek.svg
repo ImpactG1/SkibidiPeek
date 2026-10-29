@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="skibidiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF0055" />
+      <stop offset="50%" stop-color="#7928CA" />
+      <stop offset="100%" stop-color="#00DFD8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="#121216" stroke="url(#skibidiGrad)" stroke-width="4" />
+  <!-- Peeking Eye Shape -->
+  <path d="M24 64 C40 36, 88 36, 104 64 C88 92, 40 92, 24 64 Z" fill="#1e1e28" stroke="url(#skibidiGrad)" stroke-width="3" />
+  <!-- Iris -->
+  <circle cx="64" cy="64" r="20" fill="url(#skibidiGrad)" filter="url(#glow)" />
+  <!-- Pupil -->
+  <circle cx="64" cy="64" r="10" fill="#0c0d14" />
+  <!-- Glint / Reflection -->
+  <circle cx="60" cy="58" r="4.5" fill="#ffffff" opacity="0.9" />
+  <!-- Playful brow/lid -->
+  <path d="M30 46 Q 64 32 98 46" fill="none" stroke="#FF0055" stroke-width="4" stroke-linecap="round" />
+</svg>
+

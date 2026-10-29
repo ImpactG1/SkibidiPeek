@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 
 	"github.com/gorilla/websocket"
 )

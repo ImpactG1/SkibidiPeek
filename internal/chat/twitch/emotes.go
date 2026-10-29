@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 var httpClient = &http.Client{Timeout: 10 * time.Second}

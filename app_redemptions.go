@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"strings"
 
-	"ghost-chat/internal/auth"
-	"ghost-chat/internal/chat/twitch"
+	"skibidi-peek/internal/auth"
+	"skibidi-peek/internal/chat/twitch"
 )
 
 type twitchAuthAdapter struct {

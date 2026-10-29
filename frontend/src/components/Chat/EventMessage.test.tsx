@@ -1,6 +1,6 @@
 import type { ChatMessage } from '@/types/chat';
 
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { createInstance } from 'i18next';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { I18nextProvider, initReactI18next } from 'react-i18next';

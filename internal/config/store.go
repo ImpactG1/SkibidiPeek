@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	AppName        = "ghost-chat"
+	AppName        = "skibidi-peek"
+	LegacyAppName  = "ghost-chat"
 	ConfigFileName = "config.json"
 )
 
@@ -27,8 +28,25 @@ func Load(path string) (*Config, error) {
 	bytes, err := os.ReadFile(path)
 
 	if errors.Is(err, os.ErrNotExist) {
-		defaultConfig := DefaultConfig()
+		// Check for legacy Ghost Chat config
+		legacyPath := filepath.Join(filepath.Dir(filepath.Dir(path)), LegacyAppName, ConfigFileName)
+		if legacyBytes, legacyErr := os.ReadFile(legacyPath); legacyErr == nil {
+			slog.Info("found legacy ghost-chat config, migrating...", "path", legacyPath)
+			config := DefaultConfig()
+			if jsonErr := json.Unmarshal(legacyBytes, &config); jsonErr == nil {
+				// Migrate vanish keybind to lock if present
+				if config.Keybinds.Lock.Keybind == "" && config.Keybinds.Vanish.Keybind != "" {
+					config.Keybinds.Lock.Keybind = config.Keybinds.Vanish.Keybind
+				}
+				if config.Keybinds.Lock.Keybind == "" {
+					config.Keybinds.Lock.Keybind = "Ctrl+Shift+L"
+				}
+				_ = Save(&config, path)
+				return &config, nil
+			}
+		}
 
+		defaultConfig := DefaultConfig()
 		return &defaultConfig, nil
 	}
 
@@ -37,7 +55,6 @@ func Load(path string) (*Config, error) {
 	}
 
 	// Detect v3 config (camelCase keys like "savedWindowState", "options")
-	// which doesn't match v4's snake_case struct tags. Discard and start fresh.
 	var raw map[string]json.RawMessage
 
 	if err = json.Unmarshal(bytes, &raw); err != nil {
@@ -46,7 +63,6 @@ func Load(path string) (*Config, error) {
 
 	if _, hasV3Key := raw["savedWindowState"]; hasV3Key {
 		defaultConfig := DefaultConfig()
-
 		return &defaultConfig, nil
 	}
 
@@ -54,6 +70,15 @@ func Load(path string) (*Config, error) {
 
 	if err = json.Unmarshal(bytes, &config); err != nil {
 		return recoverCorrupted(path, bytes, err)
+	}
+
+	// Ensure lock keybind default
+	if config.Keybinds.Lock.Keybind == "" {
+		if config.Keybinds.Vanish.Keybind != "" {
+			config.Keybinds.Lock.Keybind = config.Keybinds.Vanish.Keybind
+		} else {
+			config.Keybinds.Lock.Keybind = "Ctrl+Shift+L"
+		}
 	}
 
 	return &config, nil

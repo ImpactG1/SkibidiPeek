@@ -1,7 +1,7 @@
 import type { ReportErrors, ReportField, ReportValues } from './reportValidation';
 
-import { SubmitBugReport } from '@bindings/ghost-chat/app.js';
-import { Input } from '@bindings/ghost-chat/internal/bugreport/models.js';
+import { SubmitBugReport } from '@bindings/skibidi-peek/app.js';
+import { Input } from '@bindings/skibidi-peek/internal/bugreport/models.js';
 
 import { validateReport } from './reportValidation';
 

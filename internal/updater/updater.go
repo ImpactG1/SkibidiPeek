@@ -3,7 +3,7 @@ package updater
 import (
 	"encoding/json"
 	"fmt"
-	"ghost-chat/internal/config"
+	"skibidi-peek/internal/config"
 	"net/http"
 	"time"
 )

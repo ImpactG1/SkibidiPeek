@@ -3,21 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
-	"ghost-chat/internal/auth"
-	"ghost-chat/internal/bugreport"
-	"ghost-chat/internal/chat"
-	"ghost-chat/internal/chat/kick"
-	"ghost-chat/internal/chat/twitch"
-	"ghost-chat/internal/chat/youtube"
-	"ghost-chat/internal/config"
-	ghHotkey "ghost-chat/internal/hotkey"
-	"ghost-chat/internal/updater"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sync"
+	"time"
+
+	"skibidi-peek/internal/auth"
+	"skibidi-peek/internal/bugreport"
+	"skibidi-peek/internal/chat"
+	"skibidi-peek/internal/chat/kick"
+	"skibidi-peek/internal/chat/twitch"
+	"skibidi-peek/internal/chat/youtube"
+	"skibidi-peek/internal/config"
+	ghHotkey "skibidi-peek/internal/hotkey"
+	"skibidi-peek/internal/updater"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
@@ -40,6 +42,7 @@ type App struct {
 	version          string
 	preExpandWidth   int
 	vanished         bool
+	locked           bool
 	lastX, lastY     int
 	lastW, lastH     int
 	platforms        bugreport.PlatformTracker
@@ -51,6 +54,8 @@ func NewApp(cfg *config.Config, configPath string, version string) *App {
 		configPath: configPath,
 		auth:       auth.NewManager(auth.NewKeychainTokenStore()),
 		version:    version,
+		locked:     cfg.WindowState.Locked,
+		vanished:   cfg.WindowState.Locked,
 		lastX:      cfg.WindowState.X,
 		lastY:      cfg.WindowState.Y,
 		lastW:      cfg.WindowState.Width,
@@ -122,7 +127,14 @@ func (a *App) ServiceStartup(ctx context.Context, options application.ServiceOpt
 		}
 
 		a.window.SetPosition(x, y)
+		a.window.SetAlwaysOnTop(true)
 		a.window.Show()
+
+		if a.locked {
+			a.window.SetIgnoreMouseEvents(true)
+			a.app.Event.Emit("lock:toggle", true)
+			a.app.Event.Emit("vanish:toggle", true)
+		}
 
 		go func() {
 			info, err := updater.CheckForUpdate(a.version)
@@ -143,11 +155,21 @@ func (a *App) ServiceStartup(ctx context.Context, options application.ServiceOpt
 		a.lastW, a.lastH = a.window.Size()
 	})
 
+	// Re-assert always on top when focus is lost or changed
+	a.window.OnWindowEvent(events.Common.WindowLostFocus, func(e *application.WindowEvent) {
+		a.window.SetAlwaysOnTop(true)
+	})
+
 	go func() {
-		if keybind := a.config.Keybinds.Vanish.Keybind; keybind != "" {
-			if err := ghHotkey.Register(keybind, a.ToggleVanish); err != nil {
-				slog.Error("failed to register vanish hotkey", "error", err)
-			}
+		keybind := a.config.Keybinds.Lock.Keybind
+		if keybind == "" {
+			keybind = a.config.Keybinds.Vanish.Keybind
+		}
+		if keybind == "" {
+			keybind = "Ctrl+Shift+L"
+		}
+		if err := ghHotkey.Register(keybind, a.ToggleLock); err != nil {
+			slog.Error("failed to register lock hotkey", "error", err, "keybind", keybind)
 		}
 	}()
 
@@ -170,6 +192,7 @@ func (a *App) SaveWindowState() {
 	}
 
 	a.config.WindowState.Height = a.lastH
+	a.config.WindowState.Locked = a.locked
 
 	if err := config.Save(a.config, a.configPath); err != nil {
 		slog.Error("failed to save config", "error", err)
@@ -205,9 +228,11 @@ func (a *App) UpdateConfig(cfg *config.Config) error {
 	a.configMu.Lock()
 
 	oldConfig := a.config
-	oldKeybind := a.config.Keybinds.Vanish.Keybind
+	oldKeybind := a.config.Keybinds.Lock.Keybind
+	if oldKeybind == "" {
+		oldKeybind = a.config.Keybinds.Vanish.Keybind
+	}
 	account := a.config.Twitch.Account
-
 	installID := a.config.InstallID
 
 	a.config = cfg
@@ -216,17 +241,20 @@ func (a *App) UpdateConfig(cfg *config.Config) error {
 
 	if err := config.Save(a.config, a.configPath); err != nil {
 		a.config = oldConfig
-
 		a.configMu.Unlock()
-
 		return err
+	}
+
+	newKeybind := cfg.Keybinds.Lock.Keybind
+	if newKeybind == "" {
+		newKeybind = cfg.Keybinds.Vanish.Keybind
 	}
 
 	a.configMu.Unlock()
 
-	if cfg.Keybinds.Vanish.Keybind != oldKeybind {
-		if err := ghHotkey.Register(cfg.Keybinds.Vanish.Keybind, a.ToggleVanish); err != nil {
-			slog.Error("failed to register vanish hotkey", "error", err)
+	if newKeybind != oldKeybind && newKeybind != "" {
+		if err := ghHotkey.Register(newKeybind, a.ToggleLock); err != nil {
+			slog.Error("failed to register lock hotkey", "error", err)
 		}
 	}
 
@@ -289,15 +317,49 @@ func (a *App) ShrinkToChat() {
 	a.window.SetSize(width, h)
 }
 
-func (a *App) ToggleVanish() {
-	a.vanished = !a.vanished
+func (a *App) ToggleLock() {
+	a.configMu.Lock()
+	a.locked = !a.locked
+	locked := a.locked
+	a.vanished = locked
+	a.config.WindowState.Locked = locked
+	_ = config.Save(a.config, a.configPath)
+	a.configMu.Unlock()
 
-	a.app.Event.Emit("vanish:toggle", a.vanished)
+	a.app.Event.Emit("lock:toggle", locked)
+	a.app.Event.Emit("vanish:toggle", locked)
 
-	if a.vanished {
+	if locked {
 		a.window.SetIgnoreMouseEvents(true)
 	} else {
 		a.window.SetIgnoreMouseEvents(false)
+	}
+}
+
+func (a *App) ToggleVanish() {
+	a.ToggleLock()
+}
+
+func (a *App) TriggerTestDonation() {
+	testDonation := chat.ChatMessage{
+		ID:        fmt.Sprintf("test-donation-%d", os.Getpid()),
+		Platform:  chat.PlatformYouTube,
+		Username:  "SkibidiDonator",
+		Avatar:    "https://lh3.googleusercontent.com/a/default-user",
+		Timestamp: time.Now(),
+		Text:      "Here's a Super Chat! Loving the stream! ✨",
+		SuperChat: &chat.SuperChatDetails{
+			Amount:      "$20.00",
+			HeaderColor: "#E62117",
+			BodyColor:   "#D00000",
+		},
+		Fragments: []chat.MessageFragment{
+			{Type: chat.FragmentText, Text: "Here's a Super Chat! Loving the stream! ✨"},
+		},
+	}
+	if a.emit != nil {
+		a.emit("chat:message", testDonation)
+		a.emit("chat:donation", testDonation)
 	}
 }
 
@@ -316,6 +378,7 @@ func (a *App) CenterOnScreen() {
 	x, y := a.centeredPosition(w, h)
 
 	a.window.SetPosition(x, y)
+	a.window.SetAlwaysOnTop(true)
 	a.window.Show()
 	a.window.Focus()
 }

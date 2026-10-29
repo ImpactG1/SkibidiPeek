@@ -12,6 +12,7 @@ export class Config {
     "general": General;
     "keybinds": Keybinds;
     "theme": ThemeConfig;
+    "donation": DonationConfig;
     "twitch": TwitchConfig;
     "youtube": YouTubeConfig;
     "kick": KickConfig;
@@ -36,6 +37,9 @@ export class Config {
         }
         if (!("theme" in $$source)) {
             this["theme"] = (new ThemeConfig());
+        }
+        if (!("donation" in $$source)) {
+            this["donation"] = (new DonationConfig());
         }
         if (!("twitch" in $$source)) {
             this["twitch"] = (new TwitchConfig());
@@ -65,6 +69,7 @@ export class Config {
         const $$createField7_0 = $$createType5;
         const $$createField8_0 = $$createType6;
         const $$createField9_0 = $$createType7;
+        const $$createField10_0 = $$createType8;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("window_state" in $$parsedSource) {
             $$parsedSource["window_state"] = $$createField2_0($$parsedSource["window_state"]);
@@ -78,17 +83,20 @@ export class Config {
         if ("theme" in $$parsedSource) {
             $$parsedSource["theme"] = $$createField5_0($$parsedSource["theme"]);
         }
+        if ("donation" in $$parsedSource) {
+            $$parsedSource["donation"] = $$createField6_0($$parsedSource["donation"]);
+        }
         if ("twitch" in $$parsedSource) {
-            $$parsedSource["twitch"] = $$createField6_0($$parsedSource["twitch"]);
+            $$parsedSource["twitch"] = $$createField7_0($$parsedSource["twitch"]);
         }
         if ("youtube" in $$parsedSource) {
-            $$parsedSource["youtube"] = $$createField7_0($$parsedSource["youtube"]);
+            $$parsedSource["youtube"] = $$createField8_0($$parsedSource["youtube"]);
         }
         if ("kick" in $$parsedSource) {
-            $$parsedSource["kick"] = $$createField8_0($$parsedSource["kick"]);
+            $$parsedSource["kick"] = $$createField9_0($$parsedSource["kick"]);
         }
         if ("custom_source" in $$parsedSource) {
-            $$parsedSource["custom_source"] = $$createField9_0($$parsedSource["custom_source"]);
+            $$parsedSource["custom_source"] = $$createField10_0($$parsedSource["custom_source"]);
         }
         return new Config($$parsedSource as Partial<Config>);
     }
@@ -115,6 +123,55 @@ export class CustomSource {
     }
 }
 
+export class DonationConfig {
+    "enabled": boolean;
+
+    /**
+     * "top", "center", "bottom"
+     */
+    "position": string;
+
+    /**
+     * in seconds
+     */
+    "duration": number;
+    "sound_enabled": boolean;
+
+    /**
+     * "bounce", "pop", "slide", etc.
+     */
+    "animation": string;
+
+    /** Creates a new DonationConfig instance. */
+    constructor($$source: Partial<DonationConfig> = {}) {
+        if (!("enabled" in $$source)) {
+            this["enabled"] = false;
+        }
+        if (!("position" in $$source)) {
+            this["position"] = "";
+        }
+        if (!("duration" in $$source)) {
+            this["duration"] = 0;
+        }
+        if (!("sound_enabled" in $$source)) {
+            this["sound_enabled"] = false;
+        }
+        if (!("animation" in $$source)) {
+            this["animation"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new DonationConfig instance from a string or object.
+     */
+    static createFrom($$source: any = {}): DonationConfig {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new DonationConfig($$parsedSource as Partial<DonationConfig>);
+    }
+}
+
 export class General {
     /**
      * default "en-US"
@@ -122,6 +179,17 @@ export class General {
     "language": string;
     "show_timestamps": boolean;
     "show_waiting_message": boolean;
+
+    /**
+     * 0.0 - 1.0 (default 1.0 or theme-driven)
+     */
+    "background_opacity": number;
+
+    /**
+     * 0.0 - 1.0 (default 1.0)
+     */
+    "text_opacity": number;
+    "reduce_motion": boolean;
 
     /** Creates a new General instance. */
     constructor($$source: Partial<General> = {}) {
@@ -133,6 +201,15 @@ export class General {
         }
         if (!("show_waiting_message" in $$source)) {
             this["show_waiting_message"] = false;
+        }
+        if (!("background_opacity" in $$source)) {
+            this["background_opacity"] = 0;
+        }
+        if (!("text_opacity" in $$source)) {
+            this["text_opacity"] = 0;
+        }
+        if (!("reduce_motion" in $$source)) {
+            this["reduce_motion"] = false;
         }
 
         Object.assign(this, $$source);
@@ -148,12 +225,13 @@ export class General {
 }
 
 export class Keybinds {
-    "vanish": VanishKeybind;
+    "lock": LockKeybind;
+    "vanish"?: LockKeybind;
 
     /** Creates a new Keybinds instance. */
     constructor($$source: Partial<Keybinds> = {}) {
-        if (!("vanish" in $$source)) {
-            this["vanish"] = (new VanishKeybind());
+        if (!("lock" in $$source)) {
+            this["lock"] = (new LockKeybind());
         }
 
         Object.assign(this, $$source);
@@ -163,10 +241,14 @@ export class Keybinds {
      * Creates a new Keybinds instance from a string or object.
      */
     static createFrom($$source: any = {}): Keybinds {
-        const $$createField0_0 = $$createType8;
+        const $$createField0_0 = $$createType9;
+        const $$createField1_0 = $$createType9;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("lock" in $$parsedSource) {
+            $$parsedSource["lock"] = $$createField0_0($$parsedSource["lock"]);
+        }
         if ("vanish" in $$parsedSource) {
-            $$parsedSource["vanish"] = $$createField0_0($$parsedSource["vanish"]);
+            $$parsedSource["vanish"] = $$createField1_0($$parsedSource["vanish"]);
         }
         return new Keybinds($$parsedSource as Partial<Keybinds>);
     }
@@ -200,12 +282,36 @@ export class KickConfig {
      * Creates a new KickConfig instance from a string or object.
      */
     static createFrom($$source: any = {}): KickConfig {
-        const $$createField3_0 = $$createType9;
+        const $$createField3_0 = $$createType10;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("user_blacklist" in $$parsedSource) {
             $$parsedSource["user_blacklist"] = $$createField3_0($$parsedSource["user_blacklist"]);
         }
         return new KickConfig($$parsedSource as Partial<KickConfig>);
+    }
+}
+
+export class LockKeybind {
+    /**
+     * default "Ctrl+Shift+L"
+     */
+    "keybind": string;
+
+    /** Creates a new LockKeybind instance. */
+    constructor($$source: Partial<LockKeybind> = {}) {
+        if (!("keybind" in $$source)) {
+            this["keybind"] = "";
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new LockKeybind instance from a string or object.
+     */
+    static createFrom($$source: any = {}): LockKeybind {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new LockKeybind($$parsedSource as Partial<LockKeybind>);
     }
 }
 
@@ -232,6 +338,12 @@ export class Theme {
     "text_stroke_width": number;
     "text_stroke_color": string;
     "top_to_bottom": boolean;
+
+    /**
+     * entrance animation name
+     */
+    "animation"?: string;
+    "max_messages"?: number;
 
     /** Creates a new Theme instance. */
     constructor($$source: Partial<Theme> = {}) {
@@ -334,7 +446,7 @@ export class ThemeConfig {
      * Creates a new ThemeConfig instance from a string or object.
      */
     static createFrom($$source: any = {}): ThemeConfig {
-        const $$createField1_0 = $$createType11;
+        const $$createField1_0 = $$createType12;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("custom_themes" in $$parsedSource) {
             $$parsedSource["custom_themes"] = $$createField1_0($$parsedSource["custom_themes"]);
@@ -416,9 +528,9 @@ export class TwitchConfig {
      * Creates a new TwitchConfig instance from a string or object.
      */
     static createFrom($$source: any = {}): TwitchConfig {
-        const $$createField7_0 = $$createType9;
-        const $$createField8_0 = $$createType12;
-        const $$createField9_0 = $$createType13;
+        const $$createField7_0 = $$createType10;
+        const $$createField8_0 = $$createType13;
+        const $$createField9_0 = $$createType14;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("user_blacklist" in $$parsedSource) {
             $$parsedSource["user_blacklist"] = $$createField7_0($$parsedSource["user_blacklist"]);
@@ -470,35 +582,12 @@ export class TwitchEvents {
     }
 }
 
-export class VanishKeybind {
-    /**
-     * empty by default
-     */
-    "keybind": string;
-
-    /** Creates a new VanishKeybind instance. */
-    constructor($$source: Partial<VanishKeybind> = {}) {
-        if (!("keybind" in $$source)) {
-            this["keybind"] = "";
-        }
-
-        Object.assign(this, $$source);
-    }
-
-    /**
-     * Creates a new VanishKeybind instance from a string or object.
-     */
-    static createFrom($$source: any = {}): VanishKeybind {
-        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
-        return new VanishKeybind($$parsedSource as Partial<VanishKeybind>);
-    }
-}
-
 export class WindowState {
     "x": number;
     "y": number;
     "width": number;
     "height": number;
+    "locked": boolean;
 
     /** Creates a new WindowState instance. */
     constructor($$source: Partial<WindowState> = {}) {
@@ -513,6 +602,9 @@ export class WindowState {
         }
         if (!("height" in $$source)) {
             this["height"] = 0;
+        }
+        if (!("locked" in $$source)) {
+            this["locked"] = false;
         }
 
         Object.assign(this, $$source);
@@ -559,7 +651,7 @@ export class YouTubeConfig {
      * Creates a new YouTubeConfig instance from a string or object.
      */
     static createFrom($$source: any = {}): YouTubeConfig {
-        const $$createField4_0 = $$createType9;
+        const $$createField4_0 = $$createType10;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("user_blacklist" in $$parsedSource) {
             $$parsedSource["user_blacklist"] = $$createField4_0($$parsedSource["user_blacklist"]);
@@ -573,13 +665,14 @@ const $$createType0 = WindowState.createFrom;
 const $$createType1 = General.createFrom;
 const $$createType2 = Keybinds.createFrom;
 const $$createType3 = ThemeConfig.createFrom;
-const $$createType4 = TwitchConfig.createFrom;
-const $$createType5 = YouTubeConfig.createFrom;
-const $$createType6 = KickConfig.createFrom;
-const $$createType7 = CustomSource.createFrom;
-const $$createType8 = VanishKeybind.createFrom;
-const $$createType9 = $Create.Array($Create.Any);
-const $$createType10 = Theme.createFrom;
-const $$createType11 = $Create.Array($$createType10);
-const $$createType12 = TwitchEvents.createFrom;
-const $$createType13 = TwitchAccount.createFrom;
+const $$createType4 = DonationConfig.createFrom;
+const $$createType5 = TwitchConfig.createFrom;
+const $$createType6 = YouTubeConfig.createFrom;
+const $$createType7 = KickConfig.createFrom;
+const $$createType8 = CustomSource.createFrom;
+const $$createType9 = LockKeybind.createFrom;
+const $$createType10 = $Create.Array($Create.Any);
+const $$createType11 = Theme.createFrom;
+const $$createType12 = $Create.Array($$createType11);
+const $$createType13 = TwitchEvents.createFrom;
+const $$createType14 = TwitchAccount.createFrom;

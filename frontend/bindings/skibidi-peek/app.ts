@@ -7,6 +7,9 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
+import * as application$0 from "../github.com/wailsapp/wails/v3/pkg/application/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
 import * as bugreport$0 from "./internal/bugreport/models.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -14,9 +17,6 @@ import * as chat$0 from "./internal/chat/models.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as config$0 from "./internal/config/models.js";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Unused imports
-import * as application$0 from "../github.com/wailsapp/wails/v3/pkg/application/models.js";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -80,8 +80,16 @@ export function SubmitBugReport(report: bugreport$0.Input): $CancellablePromise<
     });
 }
 
+export function ToggleLock(): $CancellablePromise<void> {
+    return $Call.ByID(3676377978);
+}
+
 export function ToggleVanish(): $CancellablePromise<void> {
     return $Call.ByID(1605625794);
+}
+
+export function TriggerTestDonation(): $CancellablePromise<void> {
+    return $Call.ByID(692387865);
 }
 
 export function TwitchAuthStatus(): $CancellablePromise<$models.TwitchAuthStatus> {

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 func TestRedemptionToMessage_FromFixture(t *testing.T) {

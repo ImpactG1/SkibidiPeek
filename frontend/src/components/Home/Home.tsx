@@ -1,5 +1,5 @@
-import { Connect, Disconnect } from '@bindings/ghost-chat/app.js';
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Connect, Disconnect } from '@bindings/skibidi-peek/app.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

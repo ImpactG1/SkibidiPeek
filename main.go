@@ -2,12 +2,12 @@ package main
 
 import (
 	"embed"
-	"ghost-chat/internal/config"
-	"ghost-chat/internal/logging"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"runtime"
+	"skibidi-peek/internal/config"
+	"skibidi-peek/internal/logging"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -68,12 +68,12 @@ func main() {
 
 	if runtime.GOOS == "windows" {
 		if localAppData := os.Getenv("LOCALAPPDATA"); localAppData != "" {
-			webviewUserDataPath = filepath.Join(localAppData, "ghost-chat", "webview")
+			webviewUserDataPath = filepath.Join(localAppData, "skibidi-peek", "webview")
 		}
 	}
 
 	app := application.New(application.Options{
-		Name: "Ghost Chat",
+		Name: "SkibidiPeek",
 		Icon: appIcon,
 		Windows: application.WindowsOptions{
 			WebviewUserDataPath: webviewUserDataPath,
@@ -94,7 +94,7 @@ func main() {
 	})
 
 	win := app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title:            "ghost-chat",
+		Title:            "SkibidiPeek",
 		Width:            initialW,
 		Height:           initialH,
 		Hidden:           true,
@@ -114,13 +114,13 @@ func main() {
 
 	tray := app.SystemTray.New()
 	tray.SetTemplateIcon(trayIcon)
-	tray.SetTooltip("Ghost Chat " + version)
+	tray.SetTooltip("SkibidiPeek " + version)
 
 	menu := app.NewMenu()
-	menu.Add("Ghost Chat " + version).SetEnabled(false)
+	menu.Add("SkibidiPeek " + version).SetEnabled(false)
 	menu.AddSeparator()
 	menu.Add("Center on Screen").OnClick(func(_ *application.Context) { svc.CenterOnScreen() })
-	menu.Add("Toggle Vanish").OnClick(func(_ *application.Context) { svc.ToggleVanish() })
+	menu.Add("Toggle Lock").OnClick(func(_ *application.Context) { svc.ToggleLock() })
 	menu.Add("Open Config Folder").OnClick(func(_ *application.Context) { svc.OpenConfigFolder() })
 	menu.AddSeparator()
 	menu.Add("Quit").OnClick(func(_ *application.Context) { win.Close() })

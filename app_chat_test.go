@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ghost-chat/internal/chat"
-	"ghost-chat/internal/config"
+	"skibidi-peek/internal/chat"
+	"skibidi-peek/internal/config"
 	"sync"
 	"testing"
 )

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/chat"
 )
 
 func TestParseTags(t *testing.T) {

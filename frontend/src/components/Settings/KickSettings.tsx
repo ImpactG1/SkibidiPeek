@@ -1,4 +1,4 @@
-import type { KickConfig } from '@bindings/ghost-chat/internal/config/models.js';
+import type { KickConfig } from '@bindings/skibidi-peek/internal/config/models.js';
 
 import type { DeepPartial } from '@/types/utils';
 

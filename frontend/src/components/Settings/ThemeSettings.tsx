@@ -2,7 +2,7 @@ import type React from 'react';
 
 import type { Theme } from '@/types/theme';
 
-import { ExportTheme } from '@bindings/ghost-chat/app.js';
+import { ExportTheme } from '@bindings/skibidi-peek/app.js';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

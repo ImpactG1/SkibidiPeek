@@ -1,4 +1,4 @@
-import { Platform } from '@bindings/ghost-chat/internal/chat/models.js';
+import { Platform } from '@bindings/skibidi-peek/internal/chat/models.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useConnectionStore } from './connection';

@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"ghost-chat/internal/auth"
-	"ghost-chat/internal/chat"
+	"skibidi-peek/internal/auth"
+	"skibidi-peek/internal/chat"
 
 	"github.com/gorilla/websocket"
 )
