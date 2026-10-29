@@ -68,8 +68,11 @@ cd frontend && pnpm fix
 cd frontend && pnpm test
 cd frontend && pnpm build
 
-# Build production binary
-go build -o bin/skibidi-peek.exe .
+# Build production executable (.exe)
+wails3 task build           # compiles to bin/skibidi-peek.exe
+
+# Package installer / distribution
+wails3 task package
 ```
 
 ---
