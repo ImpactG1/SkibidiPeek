@@ -41,6 +41,7 @@ type AddChatItemAction struct {
 type ChatItem struct {
 	LiveChatTextMessageRenderer                          *LiveChatTextMessageRenderer                          `json:"liveChatTextMessageRenderer"`
 	LiveChatPaidMessageRenderer                          *LiveChatPaidMessageRenderer                          `json:"liveChatPaidMessageRenderer"`
+	LiveChatPaidStickerRenderer                          *LiveChatPaidStickerRenderer                          `json:"liveChatPaidStickerRenderer"`
 	LiveChatMembershipItemRenderer                       *LiveChatMembershipItemRenderer                       `json:"liveChatMembershipItemRenderer"`
 	LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer *LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer `json:"liveChatSponsorshipsGiftPurchaseAnnouncementRenderer"`
 }
@@ -68,6 +69,16 @@ type LiveChatPaidMessageRenderer struct {
 	BodyBackgroundColor   int64      `json:"bodyBackgroundColor"`
 	HeaderTextColor       int64      `json:"headerTextColor"`
 	BodyTextColor         int64      `json:"bodyTextColor"`
+}
+
+type LiveChatPaidStickerRenderer struct {
+	MessageRendererBase
+	PurchaseAmountText       SimpleText `json:"purchaseAmountText"`
+	Sticker                  Thumbnails `json:"sticker"`
+	MoneyChipBackgroundColor int64      `json:"moneyChipBackgroundColor"`
+	MoneyChipTextColor       int64      `json:"moneyChipTextColor"`
+	BackgroundColor          int64      `json:"backgroundColor"`
+	AuthorNameTextColor      int64      `json:"authorNameTextColor"`
 }
 
 type LiveChatMembershipItemRenderer struct {

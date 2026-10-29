@@ -353,3 +353,52 @@ func TestParseGiftPurchase(t *testing.T) {
 		t.Errorf("Username = %q", msg.Username)
 	}
 }
+
+func TestParsePaidSticker(t *testing.T) {
+	r := LiveChatPaidStickerRenderer{
+		MessageRendererBase: MessageRendererBase{
+			ID:            "sticker-1",
+			AuthorName:    SimpleText{SimpleText: "SuperFan"},
+			TimestampUsec: "1616164860553335",
+		},
+		PurchaseAmountText: SimpleText{SimpleText: "$5.00"},
+		Sticker: Thumbnails{
+			Thumbnails: []Thumbnail{
+				{URL: "https://example.com/sticker_small.png", Width: 64},
+				{URL: "https://example.com/sticker_large.png", Width: 128},
+			},
+		},
+		MoneyChipBackgroundColor: 4294956544,
+		BackgroundColor:          4294967295,
+	}
+
+	msg := parsePaidSticker(r)
+
+	if msg.ID != "sticker-1" {
+		t.Errorf("ID = %q, want sticker-1", msg.ID)
+	}
+
+	if msg.Username != "SuperFan" {
+		t.Errorf("Username = %q, want SuperFan", msg.Username)
+	}
+
+	if msg.SuperChat == nil {
+		t.Fatalf("SuperChat should not be nil")
+	}
+
+	if msg.SuperChat.Amount != "$5.00" {
+		t.Errorf("Amount = %q, want $5.00", msg.SuperChat.Amount)
+	}
+
+	if !msg.SuperChat.IsSticker {
+		t.Errorf("IsSticker = false, want true")
+	}
+
+	if msg.SuperChat.StickerURL != "https://example.com/sticker_large.png" {
+		t.Errorf("StickerURL = %q, want largest thumbnail", msg.SuperChat.StickerURL)
+	}
+
+	if msg.SuperChat.HeaderColor != "#FFD600" {
+		t.Errorf("HeaderColor = %q, want #FFD600", msg.SuperChat.HeaderColor)
+	}
+}
