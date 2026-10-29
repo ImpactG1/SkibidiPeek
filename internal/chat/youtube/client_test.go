@@ -42,6 +42,55 @@ func TestParseWatchPageLive(t *testing.T) {
 	}
 }
 
+func TestParseWatchPagePrefersLiveChatOverTopChat(t *testing.T) {
+	html := `<html><script>var ytInitialData = {
+		"contents": {
+			"twoColumnWatchNextResults": {
+				"conversationBar": {
+					"liveChatRenderer": {
+						"header": {
+							"liveChatHeaderRenderer": {
+								"viewSelector": {
+									"sortFilterSubMenuRenderer": {
+										"subMenuItems": [
+											{
+												"title": "Top chat",
+												"selected": true,
+												"continuation": {
+													"reloadContinuationData": { "continuation": "top_chat_tok" }
+												}
+											},
+											{
+												"title": "Live chat",
+												"selected": false,
+												"continuation": {
+													"reloadContinuationData": { "continuation": "live_chat_tok" }
+												}
+											}
+										]
+									}
+								}
+							}
+						},
+						"continuations": [
+							{ "reloadContinuationData": { "continuation": "top_chat_tok" } }
+						]
+					}
+				}
+			}
+		}
+	};</script></html>`
+
+	cont, _, err := parseWatchPage(html)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if cont != "live_chat_tok" {
+		t.Errorf("continuation = %q, want %q (Live chat instead of Top chat)", cont, "live_chat_tok")
+	}
+}
+
 func TestDoRequestIncludesBodySnippet(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)

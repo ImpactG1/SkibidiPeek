@@ -47,4 +47,3 @@ describe('useDonationStore', () => {
         expect(useDonationStore.getState().settings.position).toBe('bottom');
     });
 });
-

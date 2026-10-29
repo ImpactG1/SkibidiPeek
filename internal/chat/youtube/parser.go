@@ -2,6 +2,7 @@ package youtube
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -39,6 +40,11 @@ func parseActions(actions []Action) (messages []chat.ChatMessage, deletions []st
 			messages = append(messages, parseGiftPurchase(*item.LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer))
 		}
 	}
+
+	// Ensure batch messages are strictly sorted chronologically by timestamp
+	sort.SliceStable(messages, func(i, j int) bool {
+		return messages[i].Timestamp.Before(messages[j].Timestamp)
+	})
 
 	return messages, deletions
 }

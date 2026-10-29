@@ -24,4 +24,3 @@ export interface DonationSettings {
     soundEnabled: boolean;
     soundVolume: number; // 0 to 100
 }
-

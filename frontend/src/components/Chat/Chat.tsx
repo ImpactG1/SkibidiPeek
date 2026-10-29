@@ -63,7 +63,27 @@ export function Chat() {
             }
 
             setMessages((prev) => {
-                const next = [...prev, msg];
+                // Deduplicate by message ID to prevent duplicate keys and layout jitter
+                if (prev.some((m) => m.id === msg.id)) {
+                    return prev;
+                }
+
+                // Insert in chronological order by timestamp so sequence is never shuffled
+                const msgTime = new Date(msg.timestamp).getTime();
+                let insertIdx = prev.length;
+                for (let i = prev.length - 1; i >= 0; i--) {
+                    if (new Date(prev[i].timestamp).getTime() <= msgTime) {
+                        insertIdx = i + 1;
+                        break;
+                    }
+                    if (i === 0) {
+                        insertIdx = 0;
+                    }
+                }
+
+                const next = [...prev];
+                next.splice(insertIdx, 0, msg);
+
                 if (next.length > MAX_MESSAGES) {
                     return next.slice(next.length - MAX_MESSAGES);
                 }
@@ -91,7 +111,8 @@ export function Chat() {
     }, []);
 
     useEffect(() => {
-        if (autoScrollRef.current && !userScrollingRef.current && messagesRef.current) {
+        const isVanished = document.documentElement.hasAttribute('data-vanished');
+        if ((autoScrollRef.current || isVanished) && !userScrollingRef.current && messagesRef.current) {
             messagesRef.current.scrollTop = topToBottom ? 0 : messagesRef.current.scrollHeight;
         }
     }, [messages, topToBottom]);

@@ -9,4 +9,3 @@ describe('playDonationChime', () => {
         expect(() => playDonationChime(1)).not.toThrow();
     });
 });
-
