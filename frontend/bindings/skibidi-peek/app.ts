@@ -70,6 +70,10 @@ export function SetApp(app: application$0.App | null, win: application$0.Webview
     return $Call.ByID(4256893662, app, win);
 }
 
+export function SetUnlockButtonBounds(x: number, y: number, w: number, h: number): $CancellablePromise<void> {
+    return $Call.ByID(3024054086, x, y, w, h);
+}
+
 export function ShrinkToChat(): $CancellablePromise<void> {
     return $Call.ByID(594383055);
 }

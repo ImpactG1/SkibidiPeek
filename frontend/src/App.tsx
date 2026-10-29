@@ -8,6 +8,8 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 
 import { Chat } from '@/components/Chat/Chat';
 import { CustomSource } from '@/components/CustomSource/CustomSource';
+import { DonationOverlay } from '@/components/DonationOverlay/DonationOverlay';
+import { FloatingUnlockBar } from '@/components/FloatingUnlockBar/FloatingUnlockBar';
 import { Home } from '@/components/Home/Home';
 import { LockToast } from '@/components/LockToast/LockToast';
 import { Settings } from '@/components/Settings/Settings';
@@ -16,6 +18,7 @@ import { TitleBar } from '@/components/TitleBar/TitleBar';
 import { useAuthStore } from '@/stores/auth';
 import { useConfigStore } from '@/stores/config';
 import { useConnectionStore } from '@/stores/connection';
+import { useDonationStore } from '@/stores/donation';
 
 import styles from './App.module.css';
 
@@ -69,10 +72,43 @@ function App() {
             setConnected(platform, false);
         });
 
+        const cancelDonation = Events.On('chat:donation', (ev) => {
+            const raw = ev.data as {
+                id?: string;
+                username?: string;
+                avatar?: string;
+                text?: string;
+                superChat?: {
+                    amount?: string;
+                    headerColor?: string;
+                    bodyColor?: string;
+                    stickerUrl?: string;
+                    isSticker?: boolean;
+                };
+                membershipEvent?: boolean;
+            };
+
+            const type = raw.superChat?.isSticker ? 'sticker' : raw.membershipEvent ? 'membership' : 'superchat';
+
+            useDonationStore.getState().pushDonation({
+                id: raw.id || `donation-${Date.now()}`,
+                type,
+                username: raw.username || 'Anonymous',
+                avatar: raw.avatar,
+                amount: raw.superChat?.amount,
+                headerColor: raw.superChat?.headerColor,
+                bodyColor: raw.superChat?.bodyColor,
+                message: raw.text,
+                stickerUrl: raw.superChat?.stickerUrl,
+                timestamp: Date.now(),
+            });
+        });
+
         return () => {
             cancelConnected();
             cancelWaiting();
             cancelDisconnected();
+            cancelDonation();
         };
     }, [setConnected, setWaiting]);
 
@@ -179,10 +215,12 @@ function App() {
                 className={`${styles.app} ${settingsOpen ? styles.withSettings : ''} ${vanished ? styles.vanished : ''}`}
                 data-vanished={vanished || undefined}
             >
+                <DonationOverlay />
                 <LockToast
                     locked={lockedToast}
                     hotkeyHint={lockKeybind}
                 />
+                {vanished && <FloatingUnlockBar hotkey={lockKeybind} />}
                 <TitleBar
                     onSettingsToggle={toggleSettings}
                     settingsOpen={settingsOpen}

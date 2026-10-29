@@ -46,6 +46,12 @@ type App struct {
 	lastX, lastY     int
 	lastW, lastH     int
 	platforms        bugreport.PlatformTracker
+	lockCancel       context.CancelFunc
+	lockBoundsMu     sync.Mutex
+	unlockBtnX       int
+	unlockBtnY       int
+	unlockBtnW       int
+	unlockBtnH       int
 }
 
 func NewApp(cfg *config.Config, configPath string, version string) *App {
@@ -132,6 +138,7 @@ func (a *App) ServiceStartup(ctx context.Context, options application.ServiceOpt
 
 		if a.locked {
 			a.window.SetIgnoreMouseEvents(true)
+			a.startLockTracking()
 			a.app.Event.Emit("lock:toggle", true)
 			a.app.Event.Emit("vanish:toggle", true)
 		}
@@ -200,6 +207,7 @@ func (a *App) SaveWindowState() {
 }
 
 func (a *App) ServiceShutdown() error {
+	a.stopLockTracking()
 	a.SaveWindowState()
 
 	go func() {
@@ -331,9 +339,21 @@ func (a *App) ToggleLock() {
 
 	if locked {
 		a.window.SetIgnoreMouseEvents(true)
+		a.startLockTracking()
 	} else {
+		a.stopLockTracking()
 		a.window.SetIgnoreMouseEvents(false)
 	}
+}
+
+func (a *App) SetUnlockButtonBounds(x, y, w, h int) {
+	a.lockBoundsMu.Lock()
+	defer a.lockBoundsMu.Unlock()
+
+	a.unlockBtnX = x
+	a.unlockBtnY = y
+	a.unlockBtnW = w
+	a.unlockBtnH = h
 }
 
 func (a *App) ToggleVanish() {

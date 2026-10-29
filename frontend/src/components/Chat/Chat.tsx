@@ -221,27 +221,31 @@ export function Chat() {
                     </div>
                 )}
                 <button
-                    className={styles.vanishBtn}
+                    className={styles.lockOverlayBtn}
                     onClick={() => void ToggleLock()}
-                    title={t('chat.vanish')}
+                    title="Lock Overlay & Click-Through (Ctrl+Shift+L)"
                 >
                     <svg
-                        width="14"
-                        height="14"
+                        width="13"
+                        height="13"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="2.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="3"
+                        <rect
+                            x="3"
+                            y="11"
+                            width="18"
+                            height="11"
+                            rx="2"
+                            ry="2"
                         />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
+                    <span>Lock</span>
                 </button>
                 {!connected && (
                     <span className={styles.disconnected}>

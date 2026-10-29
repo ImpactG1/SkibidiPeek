@@ -40,4 +40,3 @@ describe('validateYouTubeInput', () => {
         expect(validateYouTubeInput('short')).toBe('validation.youtube_invalid_input');
     });
 });
-

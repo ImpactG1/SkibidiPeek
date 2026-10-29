@@ -42,10 +42,11 @@
         "support": "Enjoying Ghost Chat? Consider supporting the project!",
         "tabs": {
             "general": "General",
-            "twitch": "Twitch",
+            "donations": "Donations & Alerts",
             "youtube": "YouTube",
-            "kick": "Kick",
             "themes": "Themes",
+            "twitch": "Twitch",
+            "kick": "Kick",
             "report": "Report a bug"
         },
         "general": {
