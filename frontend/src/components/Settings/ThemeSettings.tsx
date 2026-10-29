@@ -111,7 +111,7 @@ export function ThemeSettings() {
         const exportData = {
             ...theme,
             _llm_instructions: [
-                'This is a Ghost Chat theme file. You can modify the values below and import it back.',
+                'This is a SkibidiPeek theme file. You can modify the values below and import it back.',
                 'Fields:',
                 '  name: Display name for the theme',
                 '  font_family: CSS font-family value (e.g. "Arial, sans-serif", "inherit")',
@@ -134,6 +134,9 @@ export function ThemeSettings() {
                 '  text_stroke_width: Outline thickness around text in pixels (0-5, 0 = no outline)',
                 '  text_stroke_color: CSS color value for the text outline (e.g. "#000000")',
                 '  top_to_bottom: Show newest messages at top (true/false)',
+                '  animation: Entrance animation ("none", "slide", "fade", "pop", "bounce", "typewriter", "glitch")',
+                '  exit_animation: Exit animation ("fade", "slide", "shrink")',
+                '  max_messages: Maximum messages kept in the DOM (25-500)',
                 'Do NOT modify the "id" field. Only return valid JSON.',
             ],
         };
@@ -458,6 +461,51 @@ export function ThemeSettings() {
                         onChange={(v) => updateProp('avatar_size', v)}
                     />
                 )}
+            </div>
+
+            <div className={styles.section}>
+                <span className={styles.sectionTitle}>{t('settings.themes.animations')}</span>
+                <div className="field">
+                    <label className="field-label">{t('settings.themes.entrance_animation')}</label>
+                    <select
+                        value={displayTheme.animation ?? 'none'}
+                        disabled={readonly}
+                        onChange={(e) => updateProp('animation', e.target.value)}
+                    >
+                        <option value="none">None</option>
+                        <option value="slide">Slide In</option>
+                        <option value="fade">Fade In</option>
+                        <option value="pop">Pop (Spring)</option>
+                        <option value="bounce">Bounce</option>
+                        <option value="typewriter">Typewriter</option>
+                        <option value="glitch">Glitch</option>
+                    </select>
+                    <span className={styles.fieldHint}>{t('settings.themes.entrance_animation_desc')}</span>
+                </div>
+                <div className="field">
+                    <label className="field-label">{t('settings.themes.exit_animation')}</label>
+                    <select
+                        value={displayTheme.exit_animation ?? 'fade'}
+                        disabled={readonly}
+                        onChange={(e) => updateProp('exit_animation', e.target.value)}
+                    >
+                        <option value="fade">Fade Out</option>
+                        <option value="slide">Slide Out</option>
+                        <option value="shrink">Shrink</option>
+                    </select>
+                    <span className={styles.fieldHint}>{t('settings.themes.exit_animation_desc')}</span>
+                </div>
+                <Slider
+                    label={t('settings.themes.max_messages')}
+                    hint={t('settings.themes.max_messages_desc')}
+                    value={displayTheme.max_messages || 100}
+                    min={25}
+                    max={500}
+                    step={25}
+                    unit=""
+                    disabled={readonly}
+                    onChange={(v) => updateProp('max_messages', v)}
+                />
             </div>
 
             <div className={styles.importExport}>

@@ -18,8 +18,6 @@ import styles from './Chat.module.css';
 import { ChatMessage } from './ChatMessage';
 import { EventMessage } from './EventMessage';
 
-const MAX_MESSAGES = 500;
-
 export function Chat() {
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -84,8 +82,11 @@ export function Chat() {
                 const next = [...prev];
                 next.splice(insertIdx, 0, msg);
 
-                if (next.length > MAX_MESSAGES) {
-                    return next.slice(next.length - MAX_MESSAGES);
+                const activeTheme = getThemeById(cfg?.theme?.active_theme_id ?? 'default', cfg?.theme?.custom_themes);
+                const maxCap = activeTheme.max_messages || 100;
+
+                if (next.length > maxCap) {
+                    return next.slice(next.length - maxCap);
                 }
                 return next;
             });
@@ -312,6 +313,9 @@ export function Chat() {
                                   showAvatars={theme.show_avatars}
                                   fade={fade}
                                   fadeTimeout={timeoutSeconds}
+                                  animation={theme.animation}
+                                  exitAnimation={theme.exit_animation}
+                                  reduceMotion={config?.general?.reduce_motion}
                                   onFaded={(id) => setMessages((prev) => prev.filter((m) => m.id !== id))}
                               />
                           );

@@ -153,7 +153,14 @@
             "avatar_size_desc": "Changes the size of user profile pictures",
             "export": "Export",
             "import": "Import",
-            "llm_hint": "Tip: Export your theme and ask an AI chatbot to adjust it for you, then import it back."
+            "llm_hint": "Tip: Export your theme and ask an AI chatbot to adjust it for you, then import it back.",
+            "animations": "Animations & Limits",
+            "entrance_animation": "Entrance Animation",
+            "entrance_animation_desc": "Visual animation when a new message appears",
+            "exit_animation": "Exit Animation",
+            "exit_animation_desc": "Visual animation when an old message fades out",
+            "max_messages": "Max Messages",
+            "max_messages_desc": "Caps the chat DOM to the last N messages for performance"
         },
         "report": {
             "title": "Title",

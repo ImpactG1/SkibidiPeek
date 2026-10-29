@@ -385,6 +385,7 @@ export function ThemePreview() {
                             showAvatars={theme.show_avatars}
                             showPlatformIcon
                             showTimestamp={false}
+                            animation={theme.animation}
                         />
                     )
                 )}
