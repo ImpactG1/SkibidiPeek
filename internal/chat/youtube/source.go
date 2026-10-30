@@ -26,4 +26,3 @@ type LiveChatSource interface {
 	// Close terminates the source connection and releases resources.
 	Close() error
 }
-
