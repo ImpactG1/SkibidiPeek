@@ -470,6 +470,33 @@ func (c *Client) rebootstrap(ctx context.Context, videoURL string, continuation 
 	return nil
 }
 
+func extractVideoIDFromURL(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return ""
+	}
+
+	if v := u.Query().Get("v"); v != "" && reVideoID.MatchString(v) {
+		return v
+	}
+
+	if strings.HasPrefix(u.Path, "/live/") {
+		id := strings.Trim(strings.TrimPrefix(u.Path, "/live/"), "/")
+		if reVideoID.MatchString(id) {
+			return id
+		}
+	}
+
+	if strings.HasPrefix(u.Path, "/shorts/") {
+		id := strings.Trim(strings.TrimPrefix(u.Path, "/shorts/"), "/")
+		if reVideoID.MatchString(id) {
+			return id
+		}
+	}
+
+	return ""
+}
+
 // fetchInitialData fetches a YouTube watch page, extracts the first live chat
 // continuation token and innertube client config.
 func fetchInitialData(ctx context.Context, hc *http.Client, videoURL string) (continuation string, cfg YtCfg, err error) {
@@ -478,7 +505,56 @@ func fetchInitialData(ctx context.Context, hc *http.Client, videoURL string) (co
 		return "", YtCfg{}, fmt.Errorf("failed to fetch page: %w", err)
 	}
 
-	return parseWatchPage(string(body))
+	cont, cfg, parseErr := parseWatchPage(string(body))
+	if parseErr == nil && cont != "" {
+		return cont, cfg, nil
+	}
+
+	// If the page didn't yield a chat continuation (e.g. desktop watch page omitted conversationBar
+	// or YouTube serves dynamic chat components), attempt to fetch the standalone popout chat page.
+	if videoID := extractVideoIDFromURL(videoURL); videoID != "" && !strings.Contains(videoURL, "/live_chat") {
+		popoutURL := "https://www.youtube.com/live_chat?is_popout=1&v=" + videoID
+		if popoutBody, popErr := doRequest(ctx, hc, "GET", popoutURL, nil, nil); popErr == nil {
+			if popCont, popCfg, popParseErr := parseWatchPage(string(popoutBody)); popParseErr == nil && popCont != "" {
+				return popCont, popCfg, nil
+			}
+		}
+	}
+
+	if parseErr != nil {
+		return "", YtCfg{}, parseErr
+	}
+
+	return cont, cfg, nil
+}
+
+func extractContinuationValue(node any) string {
+	if node == nil {
+		return ""
+	}
+
+	// Try invalidationContinuationData first (low-latency PubSub streaming token)
+	if c, err := navigateJSON(node, "invalidationContinuationData", "continuation"); err == nil {
+		if s, ok := c.(string); ok && s != "" {
+			return s
+		}
+	}
+
+	// Try reloadContinuationData
+	if c, err := navigateJSON(node, "reloadContinuationData", "continuation"); err == nil {
+		if s, ok := c.(string); ok && s != "" {
+			return s
+		}
+	}
+
+	// Try timedContinuationData
+	if c, err := navigateJSON(node, "timedContinuationData", "continuation"); err == nil {
+		if s, ok := c.(string); ok && s != "" {
+			return s
+		}
+	}
+
+	return ""
 }
 
 func parseWatchPage(html string) (continuation string, cfg YtCfg, err error) {
@@ -502,80 +578,39 @@ func parseWatchPage(html string) (continuation string, cfg YtCfg, err error) {
 		}
 	}
 
-	var contValue any
+	// Check if chat is explicitly disabled on stream/popout
+	if msgText, err := navigateJSON(initData, "contents", "messageRenderer", "text", "runs", 0, "text"); err == nil {
+		if s, ok := msgText.(string); ok && s != "" {
+			return "", YtCfg{}, fmt.Errorf("%w: %s", ErrNoLiveChat, s)
+		}
+	}
 
-	// 1. Try to find the real-time "Live chat" continuation (all messages) from viewSelector
-	// rather than "Top chat" (which filters and buffers messages for 2-3 minutes).
-	if items, err := navigateJSON(initData,
+	var cont string
+
+	// 1. Standard watch page: conversationBar.liveChatRenderer.continuations[0]
+	if c0, err := navigateJSON(initData,
 		"contents", "twoColumnWatchNextResults", "conversationBar",
-		"liveChatRenderer", "header", "liveChatHeaderRenderer", "viewSelector",
-		"sortFilterSubMenuRenderer", "subMenuItems",
+		"liveChatRenderer", "continuations", 0,
 	); err == nil {
-		if subMenu, ok := items.([]any); ok {
-			for _, item := range subMenu {
-				if itemMap, ok := item.(map[string]any); ok {
-					title, _ := itemMap["title"].(string)
-					if strings.Contains(strings.ToLower(title), "live") {
-						if c, err := navigateJSON(itemMap, "continuation", "reloadContinuationData", "continuation"); err == nil {
-							if s, ok := c.(string); ok && s != "" {
-								contValue = s
-								break
-							}
-						}
-					}
-				}
-			}
+		cont = extractContinuationValue(c0)
+	}
 
-			if contValue == nil && len(subMenu) > 1 {
-				if c, err := navigateJSON(subMenu[1], "continuation", "reloadContinuationData", "continuation"); err == nil {
-					if s, ok := c.(string); ok && s != "" {
-						contValue = s
-					}
-				}
-			}
+	// 2. Popout page format: contents.liveChatRenderer.continuations[0]
+	if cont == "" {
+		if c0, err := navigateJSON(initData, "contents", "liveChatRenderer", "continuations", 0); err == nil {
+			cont = extractContinuationValue(c0)
 		}
 	}
 
-	// 2. Direct live_chat popout layout:
-	if contValue == nil {
-		if lcc, err := navigateJSON(initData, "continuationContents", "liveChatContinuation", "continuations", 0); err == nil {
-			if c, err := navigateJSON(lcc, "invalidationContinuationData", "continuation"); err == nil {
-				contValue = c
-			} else if c, err := navigateJSON(lcc, "reloadContinuationData", "continuation"); err == nil {
-				contValue = c
-			} else if c, err := navigateJSON(lcc, "timedContinuationData", "continuation"); err == nil {
-				contValue = c
-			}
+	// 3. Classic continuationContents format: continuationContents.liveChatContinuation.continuations[0]
+	if cont == "" {
+		if c0, err := navigateJSON(initData, "continuationContents", "liveChatContinuation", "continuations", 0); err == nil {
+			cont = extractContinuationValue(c0)
 		}
 	}
 
-	// 3. Fallback: reloadContinuationData in conversationBar.liveChatRenderer
-	if contValue == nil {
-		if c, err := navigateJSON(initData,
-			"contents", "twoColumnWatchNextResults", "conversationBar",
-			"liveChatRenderer", "continuations", 0, "reloadContinuationData", "continuation",
-		); err == nil {
-			contValue = c
-		}
-	}
-
-	// 4. Fallback: invalidationContinuationData
-	if contValue == nil {
-		if c, err := navigateJSON(initData,
-			"contents", "twoColumnWatchNextResults", "conversationBar",
-			"liveChatRenderer", "continuations", 0, "invalidationContinuationData", "continuation",
-		); err == nil {
-			contValue = c
-		}
-	}
-
-	if contValue == nil {
+	if cont == "" {
 		return "", YtCfg{}, fmt.Errorf("%w: no continuation token found", ErrNoLiveChat)
-	}
-
-	cont, ok := contValue.(string)
-	if !ok {
-		return "", YtCfg{}, fmt.Errorf("continuation token is not a string")
 	}
 
 	cfg = YtCfg{
@@ -679,6 +714,13 @@ func extractContinuation(continuations []Continuation) (token string, timeoutMs 
 	for _, c := range continuations {
 		if c.TimedContinuationData != nil && c.TimedContinuationData.Continuation != "" {
 			return c.TimedContinuationData.Continuation, c.TimedContinuationData.TimeoutMs
+		}
+	}
+
+	// Fallback to reloadContinuationData
+	for _, c := range continuations {
+		if c.ReloadContinuationData != nil && c.ReloadContinuationData.Continuation != "" {
+			return c.ReloadContinuationData.Continuation, c.ReloadContinuationData.TimeoutMs
 		}
 	}
 

@@ -164,6 +164,7 @@ type Accessibility struct {
 type Continuation struct {
 	TimedContinuationData        *TimedContinuationData `json:"timedContinuationData"`
 	InvalidationContinuationData *TimedContinuationData `json:"invalidationContinuationData"`
+	ReloadContinuationData       *TimedContinuationData `json:"reloadContinuationData"`
 }
 
 type TimedContinuationData struct {

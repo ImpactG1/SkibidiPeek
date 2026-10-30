@@ -42,38 +42,17 @@ func TestParseWatchPageLive(t *testing.T) {
 	}
 }
 
-func TestParseWatchPagePrefersLiveChatOverTopChat(t *testing.T) {
+func TestParseWatchPagePrefersInvalidationOverReload(t *testing.T) {
 	html := `<html><script>var ytInitialData = {
 		"contents": {
 			"twoColumnWatchNextResults": {
 				"conversationBar": {
 					"liveChatRenderer": {
-						"header": {
-							"liveChatHeaderRenderer": {
-								"viewSelector": {
-									"sortFilterSubMenuRenderer": {
-										"subMenuItems": [
-											{
-												"title": "Top chat",
-												"selected": true,
-												"continuation": {
-													"reloadContinuationData": { "continuation": "top_chat_tok" }
-												}
-											},
-											{
-												"title": "Live chat",
-												"selected": false,
-												"continuation": {
-													"reloadContinuationData": { "continuation": "live_chat_tok" }
-												}
-											}
-										]
-									}
-								}
-							}
-						},
 						"continuations": [
-							{ "reloadContinuationData": { "continuation": "top_chat_tok" } }
+							{
+								"invalidationContinuationData": { "continuation": "invalidation_tok" },
+								"reloadContinuationData": { "continuation": "reload_tok" }
+							}
 						]
 					}
 				}
@@ -86,8 +65,50 @@ func TestParseWatchPagePrefersLiveChatOverTopChat(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if cont != "live_chat_tok" {
-		t.Errorf("continuation = %q, want %q (Live chat instead of Top chat)", cont, "live_chat_tok")
+	if cont != "invalidation_tok" {
+		t.Errorf("continuation = %q, want %q (invalidationContinuationData instead of reloadContinuationData)", cont, "invalidation_tok")
+	}
+}
+
+func TestParseWatchPagePopoutFormat(t *testing.T) {
+	html := `<html><script>var ytInitialData = {
+		"contents": {
+			"liveChatRenderer": {
+				"continuations": [
+					{
+						"invalidationContinuationData": { "continuation": "popout_invalidation_tok" }
+					}
+				]
+			}
+		}
+	};</script></html>`
+
+	cont, _, err := parseWatchPage(html)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if cont != "popout_invalidation_tok" {
+		t.Errorf("continuation = %q, want %q", cont, "popout_invalidation_tok")
+	}
+}
+
+func TestParseWatchPageDisabledChat(t *testing.T) {
+	html := `<html><script>var ytInitialData = {
+		"contents": {
+			"messageRenderer": {
+				"text": {
+					"runs": [
+						{ "text": "Chat is disabled for this live stream." }
+					]
+				}
+			}
+		}
+	};</script></html>`
+
+	_, _, err := parseWatchPage(html)
+	if !errors.Is(err, ErrNoLiveChat) {
+		t.Fatalf("expected ErrNoLiveChat, got %v", err)
 	}
 }
 
